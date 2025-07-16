@@ -8,14 +8,20 @@ import androidx.room.Query
 @Dao
 interface CharacterDao {
 
+    @Query("DELETE FROM characters")
+    suspend fun deleteAll()
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCharacters(characters: List<LocalCharacters>)
+    suspend fun insertCharacters(characters: List<LocalCharacter>)
 
     @Query("SELECT * FROM characters")
-    suspend fun getAllCharacters(): List<LocalCharacters>
+    suspend fun getAllCharacters(): List<LocalCharacter>
+
+    @Query("SELECT * FROM characters WHERE id = :id")
+    suspend fun getCharacterById(id: Int): LocalCharacter
 
     @Query("SELECT * FROM characters WHERE name LIKE :name")
-    suspend fun findCharactersByName(name: String): List<LocalCharacters>
+    suspend fun findCharactersByName(name: String): List<LocalCharacter>
 
     @Query(
         """
@@ -32,5 +38,5 @@ interface CharacterDao {
         statuses: List<String>?,
         genders: List<String>?,
         species: List<String>?,
-    ): List<LocalCharacters>
+    ): List<LocalCharacter>
 }

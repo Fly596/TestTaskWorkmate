@@ -9,7 +9,7 @@ import com.example.testtaskworkmate.data.source.network.NetworkCharacter
 
 @Entity(tableName = "characters")
 @TypeConverters(Converters::class)
-data class LocalCharacters(
+data class LocalCharacter(
     @PrimaryKey val id: Int,
     val name: String,
     val status: String,
@@ -36,8 +36,8 @@ class Converters {
 }
 
 // Функция для преобразования Character в CharactersEntity.
-fun NetworkCharacter.toEntity(): LocalCharacters {
-    return LocalCharacters(
+fun NetworkCharacter.toEntity(): LocalCharacter {
+    return LocalCharacter(
         id = this.id,
         name = this.name,
         status = this.status,
@@ -55,7 +55,7 @@ fun NetworkCharacter.toEntity(): LocalCharacters {
     )
 }
 
-fun LocalCharacters.toNetwork(): NetworkCharacter {
+fun LocalCharacter.toNetwork(): NetworkCharacter {
     return NetworkCharacter(
         id = this.id,
         name = this.name,
@@ -72,6 +72,6 @@ fun LocalCharacters.toNetwork(): NetworkCharacter {
     )
 }
 
-fun List<LocalCharacters>.toNetwork(): List<NetworkCharacter> {
+fun List<LocalCharacter>.toNetwork(): List<NetworkCharacter> {
     return this.map { it.toNetwork() }
 }

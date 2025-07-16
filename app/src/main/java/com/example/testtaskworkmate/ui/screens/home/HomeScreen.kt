@@ -1,6 +1,7 @@
-package com.example.testtaskworkmate.ui.screens
+package com.example.testtaskworkmate.ui.screens.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -54,6 +55,7 @@ import com.example.testtaskworkmate.ui.theme.TestTaskWorkmateTheme
 fun HomeScreenNew(
     modifier: Modifier = Modifier,
     homeScreenViewModel: HomeScreenViewModel = hiltViewModel(),
+    onCharacterClick: (Int) -> Unit = {},
 ) {
     val state = homeScreenViewModel.uiState.collectAsStateWithLifecycle()
 
@@ -98,6 +100,7 @@ fun HomeScreenNew(
                 CharactersGridScreen(
                     modifier = Modifier,
                     networkCharacters = state.value.characters,
+                    onCharacterClick = onCharacterClick,
                 )
             }
 
@@ -168,6 +171,7 @@ fun CharactersGridScreen(
     networkCharacters: List<NetworkCharacter>,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
+    onCharacterClick: (Int) -> Unit = {},
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -175,7 +179,9 @@ fun CharactersGridScreen(
         contentPadding = contentPadding,
     ) {
         items(items = networkCharacters, key = { character -> character.id }) { character ->
-            CharacterCard(networkCharacter = character, modifier = Modifier)
+            CharacterCard(networkCharacter = character, modifier = Modifier, onCharacterClick = {
+                onCharacterClick(character.id)
+            })
         }
     }
 }
@@ -184,9 +190,16 @@ fun CharactersGridScreen(
 fun CharacterCard(
     networkCharacter: NetworkCharacter,
     modifier: Modifier = Modifier,
+    onCharacterClick: (Int) -> Unit = {},
 ) {
     Card(
-        modifier = modifier.padding(8.dp),
+        modifier = modifier
+            .padding(8.dp)
+            .clickable(
+                onClick = {
+                    onCharacterClick(networkCharacter.id)
+                }
+            ),
         colors =
             CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant

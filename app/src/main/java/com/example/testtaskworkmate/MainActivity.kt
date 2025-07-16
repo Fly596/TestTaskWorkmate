@@ -4,14 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.testtaskworkmate.ui.screens.HomeScreenNew
 import com.example.testtaskworkmate.ui.theme.TestTaskWorkmateTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,9 +19,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TestTaskWorkmateTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                RamNavGraph()
+                /* Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     HomeScreenNew(modifier = Modifier.padding(innerPadding))
-                }
+                } */
             }
         }
     }

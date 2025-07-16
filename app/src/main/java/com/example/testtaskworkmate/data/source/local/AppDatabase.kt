@@ -6,7 +6,7 @@ import androidx.room.TypeConverters
 
 @Database(
     entities = [
-        LocalCharacters::class
+        LocalCharacter::class
     ],
     version = 1,
     exportSchema = false

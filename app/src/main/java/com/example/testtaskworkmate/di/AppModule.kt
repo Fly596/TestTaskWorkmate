@@ -6,7 +6,7 @@ import com.example.testtaskworkmate.data.repos.RamRepository
 import com.example.testtaskworkmate.data.repos.RamRepositoryImpl
 import com.example.testtaskworkmate.data.source.local.AppDatabase
 import com.example.testtaskworkmate.data.source.local.CharacterDao
-import com.example.testtaskworkmate.data.source.network.NetworkDataSource
+import com.example.testtaskworkmate.data.source.network.ApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
@@ -35,13 +35,13 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRamApi(retrofit: Retrofit): NetworkDataSource =
-        retrofit.create(NetworkDataSource::class.java)
+    fun provideRamApi(retrofit: Retrofit): ApiService =
+        retrofit.create(ApiService::class.java)
 
     @Provides
     @Singleton
-    fun provideRamRepository(api: NetworkDataSource, dao: CharacterDao): RamRepository =
-        RamRepositoryImpl(networkDataSource = api, characterDao = dao)
+    fun provideRamRepository(api: ApiService, dao: CharacterDao): RamRepository =
+        RamRepositoryImpl(apiService = api, characterDao = dao)
 
     @Provides
     @Singleton

@@ -3,15 +3,12 @@ package com.example.testtaskworkmate.data.source.network
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ApiResponse(
-    val info: Info,
-    val results: List<NetworkCharacter>
-)
+data class ApiResponse(val info: Info, val results: List<NetworkCharacter>)
 
 @Serializable
 data class Info(
     val count: Int,
-    val pages: Int,
+    val pages: Int, // 42.
     val next: String?,
     val prev: String?,
 )
@@ -33,13 +30,4 @@ data class NetworkCharacter(
 )
 
 @Serializable
-data class CharacterLocation(
-    val name: String,
-    val url: String,
-)
-
-enum class CharacterStatus(val displayName: String){
-    ALIVE("Alive"),
-    DEAD("Dead"),
-    UNKNOWN("Unknown"),
-}
+data class CharacterLocation(val name: String, val url: String)
