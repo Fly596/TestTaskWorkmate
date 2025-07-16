@@ -1,36 +1,51 @@
 package com.example.testtaskworkmate.ui.screens
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import coil.network.HttpException
 import com.example.testtaskworkmate.data.model.Character
-import com.example.testtaskworkmate.data.repos.RamRepository
+import com.example.testtaskworkmate.data.repos.RamRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okio.IOException
 import javax.inject.Inject
 
-data class HomeScreenUiState(
-    val characters: List<Character> = emptyList(),
-    val searchInput: String = "",
-)
+sealed interface HomeScreenUiState {
+    data class Success(val characters: List<Character>) : HomeScreenUiState
+
+    object Error : HomeScreenUiState
+
+    object Loading : HomeScreenUiState
+}
 
 @HiltViewModel
 class HomeScreenViewModel
 @Inject
-constructor(private val ramRepo: RamRepository) : ViewModel() {
-    private val _uiState = MutableStateFlow(HomeScreenUiState())
-    val uiState = _uiState.asStateFlow()
+constructor(private val ramRepo: RamRepositoryImpl) : ViewModel() {
+
+    var homeUiState: HomeScreenUiState by
+    mutableStateOf(HomeScreenUiState.Loading)
+        private set
 
     init {
         // получение списка персонажей при инициализации ViewModel.
-        viewModelScope.launch {
-            _uiState.update { it.copy(characters = ramRepo.getCharacters()) }
-        }
+        getCharacters()
     }
 
-    fun updateSearchInput(input: String) {
-        _uiState.update { it.copy(searchInput = input) }
+    private fun getCharacters() {
+        viewModelScope.launch {
+            homeUiState = HomeScreenUiState.Loading
+            homeUiState =
+                try {
+                    HomeScreenUiState.Success(ramRepo.getCharacters())
+                } catch (e: IOException) {
+                    HomeScreenUiState.Error
+                } catch (e: HttpException) {
+                    HomeScreenUiState.Error
+                }
+        }
     }
 }

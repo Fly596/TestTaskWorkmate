@@ -1,9 +1,9 @@
 package com.example.testtaskworkmate.ui.screens
 
-import android.R.attr.name
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -32,7 +35,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.testtaskworkmate.R
 import com.example.testtaskworkmate.data.model.Character
 import com.example.testtaskworkmate.data.model.Location
@@ -43,36 +45,70 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     homeScreenViewModel: HomeScreenViewModel = hiltViewModel(),
 ) {
-    val state = homeScreenViewModel.uiState.collectAsStateWithLifecycle()
+    val state = homeScreenViewModel.homeUiState
 
     TestTaskWorkmateTheme {
-        Scaffold(
-            topBar = { HomeScreenTopBar(onSearchClick = { /*TODO: search*/ }) },
-            floatingActionButton = {
-                IconButton(
-                    onClick = {
-                        // TODO filter
-                    }
-                ) {
-                    Icon(
-                        painter =
-                            painterResource(
-                                R.drawable.filter_wght400_grad0_opsz24
-                            ),
-                        contentDescription = "Filter",
-                    )
-                }
-            },
-        ) { innerPadding ->
-            Column(modifier = modifier.padding(innerPadding).fillMaxWidth()) {}
+        when (state) {
+            is HomeScreenUiState.Error ->
+                ErrorScreen(modifier = modifier.fillMaxSize())
+
+            is HomeScreenUiState.Loading ->
+                LoadingScreen(modifier = modifier.fillMaxSize())
+
+            is HomeScreenUiState.Success ->
+                CharactersGridScreen(characters = state.characters)
         }
     }
 }
 
 @Composable
-fun CharacterCard(character: Character) {
+fun CharactersGridScreen(
+    characters: List<Character>,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+) {
+    Scaffold(
+        topBar = { HomeScreenTopBar(onSearchClick = { /*TODO: search*/ }) },
+        floatingActionButton = {
+            IconButton(
+                onClick = {
+                    // TODO filter
+                }
+            ) {
+                Icon(
+                    painter =
+                        painterResource(R.drawable.filter_wght400_grad0_opsz24),
+                    contentDescription = "Filter",
+                )
+            }
+        },
+    ) { innerPadding ->
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier =
+                modifier
+                    .padding(horizontal = 4.dp)
+                    .padding(innerPadding),
+            contentPadding = contentPadding,
+        ) {
+            items(items = characters, key = { character -> character.id }) { character ->
+                CharacterCard(
+                    character = character,
+                    modifier = modifier
+                        .padding(4.dp)
+                        .fillMaxWidth(),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun CharacterCard(character: Character, modifier: Modifier = Modifier) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
         colors =
             CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -86,7 +122,9 @@ fun CharacterCard(character: Character) {
             Image(
                 painterResource(R.drawable.rick_img),
                 contentDescription = "character_pfp",
-                modifier = Modifier.size(96.dp).clip(CircleShape),
+                modifier = Modifier
+                    .size(96.dp)
+                    .clip(CircleShape),
                 contentScale = ContentScale.Crop,
             )
 
@@ -202,6 +240,31 @@ fun HomeScreenTopBar(
                 tint = Color(50, 50, 50),
             )
         }
+    }
+}
+
+
+@Composable
+fun LoadingScreen(modifier: Modifier) {
+    Image(
+        modifier = modifier.size(200.dp),
+        painter = painterResource(R.drawable.loading_img),
+        contentDescription = "loading",
+    )
+}
+
+@Composable
+fun ErrorScreen(modifier: Modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_connection_error),
+            contentDescription = "",
+        )
+        Text(text = "loading failed", modifier = Modifier.padding(16.dp))
     }
 }
 

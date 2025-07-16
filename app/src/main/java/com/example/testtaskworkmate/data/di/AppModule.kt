@@ -2,6 +2,7 @@ package com.example.testtaskworkmate.data.di
 
 import com.example.testtaskworkmate.data.network.RamApi
 import com.example.testtaskworkmate.data.repos.RamRepository
+import com.example.testtaskworkmate.data.repos.RamRepositoryImpl
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
@@ -31,6 +32,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRamRepository(api: RamApi) = RamRepository(api)
+    fun provideRamRepository(api: RamApi): RamRepository = RamRepositoryImpl(api)
 
 }
