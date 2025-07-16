@@ -67,7 +67,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.com.google.dagger.hilt.android.gradle.plugin)
-    implementation(libs.androidx.room.runtime)
     // Retrofit
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.retrofit)
@@ -79,19 +78,14 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
 
-    implementation(libs.androidx.hilt.navigation.compose)
-
     // Coil
-    implementation(libs.coil.compose)
 
     // Room
 
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.runtime)
 
-    implementation(libs.hilt.android.core)
     implementation(libs.androidx.hilt.navigation.compose)
-    ksp(libs.hilt.compiler)
 
 
 }

@@ -20,7 +20,7 @@ interface CharacterDao {
     @Query("SELECT * FROM characters WHERE id = :id")
     suspend fun getCharacterById(id: Int): LocalCharacter
 
-    @Query("SELECT * FROM characters WHERE name LIKE :name")
+    @Query("SELECT * FROM characters WHERE name LIKE '%' || :name || '%'")
     suspend fun findCharactersByName(name: String): List<LocalCharacter>
 
     @Query(

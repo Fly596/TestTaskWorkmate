@@ -61,10 +61,9 @@ fun HomeScreenNew(
 
     TestTaskWorkmateTheme {
         Scaffold(
-            modifier = modifier.padding(horizontal = 16.dp),
+            modifier = modifier.fillMaxSize(),
             topBar = {
                 HomeScreenTopBar(
-                    modifier = Modifier.fillMaxWidth(),
                     onSearchClick = {
                         homeScreenViewModel.onSearchByNameQuerySubmitted(it)
                     },
@@ -214,7 +213,9 @@ fun CharacterCard(
                     .build(),
             contentDescription = "Character pfp",
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .size(256.dp),
         )
         Spacer(modifier = Modifier.height(16.dp))
         Column(modifier = Modifier.padding(8.dp)) {
@@ -284,7 +285,9 @@ fun HomeScreenTopBar(
     val input = remember { mutableStateOf("") }
 
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 32.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // Поле для поиска персонажей.

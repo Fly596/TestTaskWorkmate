@@ -42,11 +42,20 @@ constructor(private val ramRepo: RamRepository) : ViewModel() {
                 val characters = ramRepo.fetchCharacters()
                 _uiState.update { it.copy(characters = characters) }
             }
-
         }
     }
 
     fun onSearchByNameQuerySubmitted(query: String) {
+        viewModelScope.launch {
+            val filteredCharacters =
+                if (query.isEmpty()) {
+                    _uiState.value.characters
+                } else {
+                    ramRepo.getCharactersByName(query)
+                }
+            _uiState.update { it.copy(characters = filteredCharacters) }
+        }
+
         // TODO: настроить поля фильтра.
         /*         viewModelScope.launch {
         val filteredCharacters =

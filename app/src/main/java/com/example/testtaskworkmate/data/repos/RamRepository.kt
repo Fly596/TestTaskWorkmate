@@ -15,6 +15,8 @@ interface RamRepository {
     suspend fun refresh()
 
     suspend fun getCharacter(id: Int): NetworkCharacter?
+
+    suspend fun getCharactersByName(name: String): List<NetworkCharacter>
 }
 
 @Singleton
@@ -49,6 +51,10 @@ constructor(
             // Возвращаем список NetworkCharacter.
             return newLocalCharacters.toNetwork()
         }
+    }
+
+    override suspend fun getCharactersByName(name: String): List<NetworkCharacter> {
+        return characterDao.findCharactersByName(name).toNetwork()
     }
 
     override suspend fun refresh() {
