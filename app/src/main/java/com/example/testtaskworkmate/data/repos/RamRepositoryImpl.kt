@@ -15,5 +15,5 @@ class RamRepositoryImpl @Inject constructor(private val ramApi: RamApi) :
     RamRepository {
 
     override suspend fun getCharacters(): List<Character> =
-        ramApi.getCharacters()
+        ramApi.getCharacters().results
 }

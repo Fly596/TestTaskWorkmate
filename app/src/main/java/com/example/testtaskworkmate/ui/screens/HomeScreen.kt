@@ -14,9 +14,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -28,16 +28,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.testtaskworkmate.R
 import com.example.testtaskworkmate.data.model.Character
-import com.example.testtaskworkmate.data.model.Location
+import com.example.testtaskworkmate.data.model.CharacterLocation
 import com.example.testtaskworkmate.ui.theme.TestTaskWorkmateTheme
 
 @Composable
@@ -56,7 +58,33 @@ fun HomeScreen(
                 LoadingScreen(modifier = modifier.fillMaxSize())
 
             is HomeScreenUiState.Success ->
-                CharactersGridScreen(characters = state.characters)
+                Scaffold(
+                    modifier = modifier.padding(horizontal = 16.dp),
+                    topBar = { HomeScreenTopBar(onSearchClick = { /*TODO: search*/ }) },
+                    floatingActionButton = {
+                        FilledIconButton(
+                            onClick = {
+                                // TODO filter
+                            },
+                            modifier = Modifier.size(56.dp)
+                        ) {
+                            Icon(
+                                painter =
+                                    painterResource(R.drawable.filter_wght400_grad0_opsz24),
+                                contentDescription = "Filter",
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
+                    },
+                ) { innerPadding ->
+                    CharactersGridScreen(
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .padding(innerPadding),
+                        characters = state.characters
+                    )
+
+                }
         }
     }
 }
@@ -67,38 +95,18 @@ fun CharactersGridScreen(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
-    Scaffold(
-        topBar = { HomeScreenTopBar(onSearchClick = { /*TODO: search*/ }) },
-        floatingActionButton = {
-            IconButton(
-                onClick = {
-                    // TODO filter
-                }
-            ) {
-                Icon(
-                    painter =
-                        painterResource(R.drawable.filter_wght400_grad0_opsz24),
-                    contentDescription = "Filter",
-                )
-            }
-        },
-    ) { innerPadding ->
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier =
-                modifier
-                    .padding(horizontal = 4.dp)
-                    .padding(innerPadding),
-            contentPadding = contentPadding,
-        ) {
-            items(items = characters, key = { character -> character.id }) { character ->
-                CharacterCard(
-                    character = character,
-                    modifier = modifier
-                        .padding(4.dp)
-                        .fillMaxWidth(),
-                )
-            }
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(1),
+        modifier =
+            modifier,
+        contentPadding = contentPadding,
+    ) {
+        items(items = characters, key = { character -> character.id }) { character ->
+            CharacterCard(
+                character = character,
+                modifier = Modifier
+                    .fillMaxWidth(),
+            )
         }
     }
 }
@@ -106,9 +114,9 @@ fun CharactersGridScreen(
 @Composable
 fun CharacterCard(character: Character, modifier: Modifier = Modifier) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(vertical = 8.dp),
         colors =
             CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -119,14 +127,22 @@ fun CharacterCard(character: Character, modifier: Modifier = Modifier) {
             modifier = Modifier.padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Image(
-                painterResource(R.drawable.rick_img),
-                contentDescription = "character_pfp",
-                modifier = Modifier
-                    .size(96.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop,
+            AsyncImage(
+                model = ImageRequest.Builder(context = LocalContext.current)
+                    .data(character.image)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = "Character pfp",
+                contentScale = ContentScale.Crop
             )
+            /*          Image(
+                         painterResource(R.drawable.rick_img),
+                         contentDescription = "character_pfp",
+                         modifier = Modifier
+                             .size(96.dp)
+                             .clip(CircleShape),
+                         contentScale = ContentScale.Crop,
+                     ) */
 
             Column() {
                 Text(
@@ -174,24 +190,14 @@ fun CharacterCardPreview() {
             type = "",
             gender = "Male",
             origin =
-                Location(
-                    id = 2,
+                CharacterLocation(
                     name = "Earth (C-137)",
-                    type = "Planet",
-                    dimension = "Dimension C-137",
-                    residents = emptyList(),
                     url = "",
-                    created = "",
                 ),
             location =
-                Location(
-                    id = 2,
+                CharacterLocation(
                     name = "Citadel of Ricks",
-                    type = "Space station",
-                    dimension = "unknown",
-                    residents = emptyList(),
                     url = "",
-                    created = "",
                 ),
             image = "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
             episode = listOf("https://rickandmortyapi.com/api/episode/1"),

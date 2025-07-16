@@ -13,7 +13,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 import javax.inject.Singleton
 
-private const val BASE_URL = "https://rickandmortyapi.com/api"
+private const val BASE_URL = "https://rickandmortyapi.com/api/"
 
 @Module
 @InstallIn(SingletonComponent::class)

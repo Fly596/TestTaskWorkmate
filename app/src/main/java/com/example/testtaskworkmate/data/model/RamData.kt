@@ -3,6 +3,20 @@ package com.example.testtaskworkmate.data.model
 import kotlinx.serialization.Serializable
 
 @Serializable
+data class ApiResponse(
+    val info: Info,
+    val results: List<Character>
+)
+
+@Serializable
+data class Info(
+    val count: Int,
+    val pages: Int,
+    val next: String?,
+    val prev: String?,
+)
+
+@Serializable
 data class Character(
     val id: Int,
     val name: String,
@@ -10,8 +24,8 @@ data class Character(
     val species: String,
     val type: String,
     val gender: String,
-    val origin: Location,
-    val location: Location,
+    val origin: CharacterLocation,
+    val location: CharacterLocation,
     val image: String,
     val episode: List<String>,
     val url: String,
@@ -19,14 +33,9 @@ data class Character(
 )
 
 @Serializable
-data class Location(
-    val id: Int,
+data class CharacterLocation(
     val name: String,
-    val type: String,
-    val dimension: String,
-    val residents: List<String>,
     val url: String,
-    val created: String,
 )
 
 enum class CharacterStatus(val displayName: String){
