@@ -9,17 +9,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -67,23 +68,6 @@ fun HomeScreenNew(
                     },
                 )
             },
-            floatingActionButton = {
-                FilledIconButton(
-                    onClick = {
-                        // TODO filter
-                    },
-                    modifier = Modifier.size(56.dp),
-                ) {
-                    Icon(
-                        painter =
-                            painterResource(
-                                R.drawable.filter_wght400_grad0_opsz24
-                            ),
-                        contentDescription = "Filter",
-                        modifier = Modifier.size(32.dp),
-                    )
-                }
-            },
         ) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
                 Row(modifier = Modifier.fillMaxWidth()) {
@@ -91,21 +75,28 @@ fun HomeScreenNew(
                         menuItems = listOf("alive", "dead", "unknown"),
                         filterValue = "Status",
                     )
-                    Spacer(modifier = Modifier.width(16.dp))
+                    // Spacer(modifier = Modifier.width(16.dp))
                     DropdownMenu(
                         menuItems = listOf("human", "alien"),
                         filterValue = "Species",
                     )
-                    Spacer(modifier = Modifier.width(16.dp))
+                    // Spacer(modifier = Modifier.width(16.dp))
                     DropdownMenu(
-                        menuItems = listOf("male", "female", "unknown"),
+                        menuItems =
+                            listOf("male", "female", "unknown", "genderless"),
                         filterValue = "Gender",
                     )
-                    Spacer(modifier = Modifier.width(16.dp))
-
+                    // Spacer(modifier = Modifier.width(16.dp))
+                    Button(
+                        onClick = {
+                            // TODO filter
+                        }
+                    ) {
+                        Text("Apply filters")
+                    }
                 }
                 CharactersGridScreen(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier,
                     networkCharacters = state.value.characters,
                 )
             }
@@ -157,15 +148,14 @@ fun DropdownMenu(
             menuItems.forEachIndexed { index, option ->
                 Row(
                     modifier = Modifier.padding(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Checkbox(
                         checked = checkedStates[index],
                         onCheckedChange = { isChecked ->
                             checkedStates[index] = isChecked
                         },
-
-                        )
+                    )
                     Text(text = option)
                 }
             }
@@ -180,15 +170,12 @@ fun CharactersGridScreen(
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(1),
+        columns = GridCells.Fixed(2),
         modifier = modifier,
         contentPadding = contentPadding,
     ) {
         items(items = networkCharacters, key = { character -> character.id }) { character ->
-            CharacterCard(
-                networkCharacter = character,
-                modifier = Modifier.fillMaxWidth(),
-            )
+            CharacterCard(networkCharacter = character, modifier = Modifier)
         }
     }
 }
@@ -199,66 +186,51 @@ fun CharacterCard(
     modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
+        modifier = modifier.padding(8.dp),
         colors =
             CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant
             ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            AsyncImage(
-                model =
-                    ImageRequest.Builder(context = LocalContext.current)
-                        .data(networkCharacter.image)
-                        .crossfade(true)
-                        .build(),
-                contentDescription = "Character pfp",
-                contentScale = ContentScale.Crop,
+        AsyncImage(
+            model =
+                ImageRequest.Builder(context = LocalContext.current)
+                    .data(networkCharacter.image)
+                    .crossfade(true)
+                    .build(),
+            contentDescription = "Character pfp",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Column(modifier = Modifier.padding(8.dp)) {
+            Text(
+                text = networkCharacter.name,
+                style = MaterialTheme.typography.headlineSmall,
             )
-            /*          Image(
-                painterResource(R.drawable.rick_img),
-                contentDescription = "character_pfp",
-                modifier = Modifier
-                    .size(96.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop,
-            ) */
+            Text(text = networkCharacter.type)
+            Text(text = "Species: ${networkCharacter.species}")
+            Text(text = "Gender: ${networkCharacter.gender}")
 
-            Column() {
-                Text(
-                    text = networkCharacter.name,
-                    style = MaterialTheme.typography.headlineSmall,
+            // Статус.
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                val statusColor =
+                    when (networkCharacter.status) {
+                        "Dead" -> Color.Red
+                        "Alive" -> Color.Green
+                        else -> Color.Black
+                    }
+                Icon(
+                    painterResource(
+                        R.drawable.circle_24dp_000000_fill1_wght400_grad0_opsz24
+                    ),
+                    contentDescription = "status indicator",
+                    tint = statusColor,
+                    modifier = Modifier.size(12.dp),
                 )
-                Text(text = networkCharacter.type)
-                Text(text = "Species: ${networkCharacter.species}")
-                Text(text = "Gender: ${networkCharacter.gender}")
-
-                // Статус.
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    val statusColor =
-                        when (networkCharacter.status) {
-                            "Dead" -> Color.Red
-                            "Alive" -> Color.Green
-                            else -> Color.Black
-                        }
-                    Icon(
-                        painterResource(
-                            R.drawable
-                                .circle_24dp_000000_fill1_wght400_grad0_opsz24
-                        ),
-                        contentDescription = "status indicator",
-                        tint = statusColor,
-                        modifier = Modifier.size(12.dp),
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = "Status: ${networkCharacter.status}")
-                }
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(text = "Status: ${networkCharacter.status}")
             }
         }
     }
@@ -322,7 +294,7 @@ fun HomeScreenTopBar(
                 painter =
                     painterResource(R.drawable.search_wght400_grad0_opsz24),
                 contentDescription = "Filter",
-                tint = Color(50, 50, 50),
+                tint = MaterialTheme.colorScheme.onBackground,
             )
         }
     }
