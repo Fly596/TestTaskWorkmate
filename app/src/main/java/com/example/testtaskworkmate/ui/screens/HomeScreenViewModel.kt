@@ -1,53 +1,55 @@
 package com.example.testtaskworkmate.ui.screens
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import coil.network.HttpException
-import com.example.testtaskworkmate.data.repos.RamRepositoryImpl
+import com.example.testtaskworkmate.data.repos.RamRepository
 import com.example.testtaskworkmate.data.source.network.NetworkCharacter
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okio.IOException
 import javax.inject.Inject
 
-sealed interface HomeScreenUiState {
-    data class Success(val networkCharacters: List<NetworkCharacter>) : HomeScreenUiState
-
-    object Error : HomeScreenUiState
-
-    object Loading : HomeScreenUiState
-}
+data class HomeScreenUiState(
+    val characters: List<NetworkCharacter> = emptyList(),
+    val searchQuery: String = "",
+)
 
 @HiltViewModel
 class HomeScreenViewModel
 @Inject
-constructor(private val ramRepo: RamRepositoryImpl) : ViewModel() {
+constructor(
+    private val ramRepo: RamRepository,
+) : ViewModel() {
 
-    var homeUiState: HomeScreenUiState by
-    mutableStateOf(HomeScreenUiState.Loading)
-        private set
+    private val _uiState = MutableStateFlow(HomeScreenUiState())
+    val uiState = _uiState.asStateFlow()
 
     init {
-        // получение списка персонажей при инициализации ViewModel.
         getCharacters()
     }
 
     private fun getCharacters() {
         viewModelScope.launch {
-            homeUiState = HomeScreenUiState.Loading
-            homeUiState =
-                try {
-                    HomeScreenUiState.Success(
-                        ramRepo.getNetworkCharacters()
-                    )
-                } catch (e: IOException) {
-                    HomeScreenUiState.Error
-                } catch (e: HttpException) {
-                    HomeScreenUiState.Error
-                }
+            val characters = ramRepo.getNetworkCharacters()
+            _uiState.update { it.copy(characters = characters) }
         }
+    }
+
+    fun onSearchQueryChanged(query: String) {
+        _uiState.update { it.copy(searchQuery = query) }
+    }
+
+    fun onSearchQuerySubmitted(query: String) {
+        val filteredCharacters =
+            if (query.isEmpty()) {
+                _uiState.value.characters
+            } else {
+                _uiState.value.characters.filter {
+                    it.name.contains(query, ignoreCase = true)
+                }
+            }
+        _uiState.update { it.copy(characters = filteredCharacters) }
     }
 }

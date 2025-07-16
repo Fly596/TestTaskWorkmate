@@ -35,6 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.testtaskworkmate.R
@@ -43,48 +44,46 @@ import com.example.testtaskworkmate.data.source.network.NetworkCharacter
 import com.example.testtaskworkmate.ui.theme.TestTaskWorkmateTheme
 
 @Composable
-fun HomeScreen(
+fun HomeScreenNew(
     modifier: Modifier = Modifier,
     homeScreenViewModel: HomeScreenViewModel = hiltViewModel(),
 ) {
-    val state = homeScreenViewModel.homeUiState
+    val state = homeScreenViewModel.uiState.collectAsStateWithLifecycle()
 
     TestTaskWorkmateTheme {
-        when (state) {
-            is HomeScreenUiState.Error ->
-                ErrorScreen(modifier = modifier.fillMaxSize())
-
-            is HomeScreenUiState.Loading ->
-                LoadingScreen(modifier = modifier.fillMaxSize())
-
-            is HomeScreenUiState.Success ->
-                Scaffold(
-                    modifier = modifier.padding(horizontal = 16.dp),
-                    topBar = { HomeScreenTopBar(onSearchClick = { /*TODO: search*/ }) },
-                    floatingActionButton = {
-                        FilledIconButton(
-                            onClick = {
-                                // TODO filter
-                            },
-                            modifier = Modifier.size(56.dp)
-                        ) {
-                            Icon(
-                                painter =
-                                    painterResource(R.drawable.filter_wght400_grad0_opsz24),
-                                contentDescription = "Filter",
-                                modifier = Modifier.size(32.dp)
-                            )
-                        }
+        Scaffold(
+            modifier = modifier.padding(horizontal = 16.dp),
+            topBar = {
+                HomeScreenTopBar(
+                    onSearchClick = {
+                        homeScreenViewModel.onSearchQuerySubmitted(it)
+                    }
+                )
+            },
+            floatingActionButton = {
+                FilledIconButton(
+                    onClick = {
+                        // TODO filter
                     },
-                ) { innerPadding ->
-                    CharactersGridScreen(
-                        modifier = modifier
-                            .fillMaxWidth()
-                            .padding(innerPadding),
-                        networkCharacters = state.networkCharacters
+                    modifier = Modifier.size(56.dp),
+                ) {
+                    Icon(
+                        painter =
+                            painterResource(
+                                R.drawable.filter_wght400_grad0_opsz24
+                            ),
+                        contentDescription = "Filter",
+                        modifier = Modifier.size(32.dp),
                     )
-
                 }
+            },
+        ) { innerPadding ->
+            CharactersGridScreen(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(innerPadding),
+                networkCharacters = state.value.characters,
+            )
         }
     }
 }
@@ -97,22 +96,23 @@ fun CharactersGridScreen(
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(1),
-        modifier =
-            modifier,
+        modifier = modifier,
         contentPadding = contentPadding,
     ) {
         items(items = networkCharacters, key = { character -> character.id }) { character ->
             CharacterCard(
                 networkCharacter = character,
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
             )
         }
     }
 }
 
 @Composable
-fun CharacterCard(networkCharacter: NetworkCharacter, modifier: Modifier = Modifier) {
+fun CharacterCard(
+    networkCharacter: NetworkCharacter,
+    modifier: Modifier = Modifier,
+) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -128,21 +128,22 @@ fun CharacterCard(networkCharacter: NetworkCharacter, modifier: Modifier = Modif
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             AsyncImage(
-                model = ImageRequest.Builder(context = LocalContext.current)
-                    .data(networkCharacter.image)
-                    .crossfade(true)
-                    .build(),
+                model =
+                    ImageRequest.Builder(context = LocalContext.current)
+                        .data(networkCharacter.image)
+                        .crossfade(true)
+                        .build(),
                 contentDescription = "Character pfp",
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
             )
             /*          Image(
-                         painterResource(R.drawable.rick_img),
-                         contentDescription = "character_pfp",
-                         modifier = Modifier
-                             .size(96.dp)
-                             .clip(CircleShape),
-                         contentScale = ContentScale.Crop,
-                     ) */
+                painterResource(R.drawable.rick_img),
+                contentDescription = "character_pfp",
+                modifier = Modifier
+                    .size(96.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop,
+            ) */
 
             Column() {
                 Text(
@@ -189,16 +190,8 @@ fun CharacterCardPreview() {
             species = "Human",
             type = "",
             gender = "Male",
-            origin =
-                CharacterLocation(
-                    name = "Earth (C-137)",
-                    url = "",
-                ),
-            location =
-                CharacterLocation(
-                    name = "Citadel of Ricks",
-                    url = "",
-                ),
+            origin = CharacterLocation(name = "Earth (C-137)", url = ""),
+            location = CharacterLocation(name = "Citadel of Ricks", url = ""),
             image = "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
             episode = listOf("https://rickandmortyapi.com/api/episode/1"),
             url = "https://rickandmortyapi.com/api/character/1",
@@ -236,6 +229,7 @@ fun HomeScreenTopBar(
         // Кнопка для поиска.
         IconButton(
             onClick = {
+                onSearchClick(input.value)
                 // TODO: search
             }
         ) {
@@ -248,7 +242,6 @@ fun HomeScreenTopBar(
         }
     }
 }
-
 
 @Composable
 fun LoadingScreen(modifier: Modifier) {

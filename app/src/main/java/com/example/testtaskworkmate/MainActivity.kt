@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.testtaskworkmate.ui.screens.HomeScreen
+import com.example.testtaskworkmate.ui.screens.HomeScreenNew
 import com.example.testtaskworkmate.ui.theme.TestTaskWorkmateTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             TestTaskWorkmateTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    HomeScreen(modifier = Modifier.padding(innerPadding))
+                    HomeScreenNew(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
