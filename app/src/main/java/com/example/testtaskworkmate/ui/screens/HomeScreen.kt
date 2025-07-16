@@ -2,6 +2,7 @@ package com.example.testtaskworkmate.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,8 +27,11 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -55,9 +61,10 @@ fun HomeScreenNew(
             modifier = modifier.padding(horizontal = 16.dp),
             topBar = {
                 HomeScreenTopBar(
+                    modifier = Modifier.fillMaxWidth(),
                     onSearchClick = {
                         homeScreenViewModel.onSearchByNameQuerySubmitted(it)
-                    }
+                    },
                 )
             },
             floatingActionButton = {
@@ -78,12 +85,90 @@ fun HomeScreenNew(
                 }
             },
         ) { innerPadding ->
-            CharactersGridScreen(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(innerPadding),
-                networkCharacters = state.value.characters,
-            )
+            Column(modifier = Modifier.padding(innerPadding)) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    DropdownMenu(
+                        menuItems = listOf("alive", "dead", "unknown"),
+                        filterValue = "Status",
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    DropdownMenu(
+                        menuItems = listOf("human", "alien"),
+                        filterValue = "Species",
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    DropdownMenu(
+                        menuItems = listOf("male", "female", "unknown"),
+                        filterValue = "Gender",
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                }
+                CharactersGridScreen(
+                    modifier = Modifier.fillMaxWidth(),
+                    networkCharacters = state.value.characters,
+                )
+            }
+
+            /*             Column(modifier = Modifier.padding(innerPadding)) {
+                Row(modifier = Modifier.fillMaxWidth()){
+                    DropdownMenu(menuItems = listOf("alive", "dead", "unknown"), filterValue = "Status")
+                    Spacer(modifier = Modifier.width(16.dp))
+                    DropdownMenu(menuItems = listOf("human", "alien"), filterValue = "Species")
+                    Spacer(modifier = Modifier.width(16.dp))
+                }
+                CharactersGridScreen(
+                    modifier = Modifier.fillMaxWidth().padding(innerPadding),
+                    networkCharacters = state.value.characters,
+                )
+            } */
+        }
+    }
+}
+
+@Composable
+fun DropdownMenu(
+    menuItems: List<String> = emptyList(),
+    filterValue: String = "filter",
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val checkedStates = remember {
+        mutableStateListOf<Boolean>().apply {
+            repeat(menuItems.size) { add(false) }
+        }
+    }
+
+    Box(modifier = Modifier.padding(8.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(text = filterValue)
+            IconButton(onClick = { expanded = !expanded }) {
+                Icon(
+                    painter = painterResource(R.drawable.arrow_dropdown),
+                    contentDescription = "Filter",
+                    modifier = Modifier.size(28.dp),
+                )
+            }
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            menuItems.forEachIndexed { index, option ->
+                Row(
+                    modifier = Modifier.padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = checkedStates[index],
+                        onCheckedChange = { isChecked ->
+                            checkedStates[index] = isChecked
+                        },
+
+                        )
+                    Text(text = option)
+                }
+            }
         }
     }
 }
