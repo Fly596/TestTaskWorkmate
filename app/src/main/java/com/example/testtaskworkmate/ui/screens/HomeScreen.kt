@@ -1,25 +1,42 @@
 package com.example.testtaskworkmate.ui.screens
 
+import android.R.attr.name
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.testtaskworkmate.R
+import com.example.testtaskworkmate.data.model.Character
+import com.example.testtaskworkmate.data.model.Location
 import com.example.testtaskworkmate.ui.theme.TestTaskWorkmateTheme
-
-// import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun HomeScreen(
@@ -30,7 +47,7 @@ fun HomeScreen(
 
     TestTaskWorkmateTheme {
         Scaffold(
-            topBar = { HomeScreenTopBar() },
+            topBar = { HomeScreenTopBar(onSearchClick = { /*TODO: search*/ }) },
             floatingActionButton = {
                 IconButton(
                     onClick = {
@@ -47,25 +64,129 @@ fun HomeScreen(
                 }
             },
         ) { innerPadding ->
-            Column(modifier = modifier.padding(innerPadding).fillMaxWidth()) {
+            Column(modifier = modifier.padding(innerPadding).fillMaxWidth()) {}
+        }
+    }
+}
 
+@Composable
+fun CharacterCard(character: Character) {
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant
+            ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Image(
+                painterResource(R.drawable.rick_img),
+                contentDescription = "character_pfp",
+                modifier = Modifier.size(96.dp).clip(CircleShape),
+                contentScale = ContentScale.Crop,
+            )
+
+            Column() {
+                Text(
+                    text = character.name,
+                    style = MaterialTheme.typography.headlineSmall,
+                )
+                Text(text = character.type)
+                Text(text = "Species: ${character.species}")
+                Text(text = "Gender: ${character.gender}")
+
+                // Статус.
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    val statusColor =
+                        when (character.status) {
+                            "Dead" -> Color.Red
+                            "Alive" -> Color.Green
+                            else -> Color.Black
+                        }
+                    Icon(
+                        painterResource(
+                            R.drawable
+                                .circle_24dp_000000_fill1_wght400_grad0_opsz24
+                        ),
+                        contentDescription = "status indicator",
+                        tint = statusColor,
+                        modifier = Modifier.size(12.dp),
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(text = "Status: ${character.status}")
+                }
             }
         }
     }
 }
 
 @Composable
-fun HomeScreenTopBar(modifier: Modifier = Modifier) {
+@Preview
+fun CharacterCardPreview() {
+    val character =
+        Character(
+            id = 1,
+            name = "Rick Sanchez",
+            status = "Alive",
+            species = "Human",
+            type = "",
+            gender = "Male",
+            origin =
+                Location(
+                    id = 2,
+                    name = "Earth (C-137)",
+                    type = "Planet",
+                    dimension = "Dimension C-137",
+                    residents = emptyList(),
+                    url = "",
+                    created = "",
+                ),
+            location =
+                Location(
+                    id = 2,
+                    name = "Citadel of Ricks",
+                    type = "Space station",
+                    dimension = "unknown",
+                    residents = emptyList(),
+                    url = "",
+                    created = "",
+                ),
+            image = "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
+            episode = listOf("https://rickandmortyapi.com/api/episode/1"),
+            url = "https://rickandmortyapi.com/api/character/1",
+            created = "2017-11-04T18:48:46.250Z",
+        )
+
+    TestTaskWorkmateTheme {
+        Column(modifier = Modifier.fillMaxSize()) {
+            CharacterCard(character = character)
+            CharacterCard(character = character)
+        }
+    }
+}
+
+@Composable
+fun HomeScreenTopBar(
+    modifier: Modifier = Modifier,
+    onSearchClick: (String) -> Unit,
+) {
     val input = remember { mutableStateOf("") }
 
-    Row(modifier = modifier.fillMaxWidth()) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         // Поле для поиска персонажей.
-        TextField(
+        OutlinedTextField(
             value = input.value,
             onValueChange = { input.value = it },
             label = { Text("Search characters") },
             singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier,
         )
 
         // Кнопка для поиска.
@@ -78,7 +199,16 @@ fun HomeScreenTopBar(modifier: Modifier = Modifier) {
                 painter =
                     painterResource(R.drawable.search_wght400_grad0_opsz24),
                 contentDescription = "Filter",
+                tint = Color(50, 50, 50),
             )
         }
     }
 }
+
+/* @Preview
+@Composable
+fun HomeScreenTopBarPreview() {
+    Column(modifier = Modifier.fillMaxSize()) {
+        HomeScreenTopBar(onSearchClick = {})
+    }
+} */

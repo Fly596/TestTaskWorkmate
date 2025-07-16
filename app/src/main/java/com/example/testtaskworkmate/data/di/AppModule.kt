@@ -1,5 +1,7 @@
 package com.example.testtaskworkmate.data.di
 
+import com.example.testtaskworkmate.data.network.RamApi
+import com.example.testtaskworkmate.data.repos.RamRepository
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
@@ -22,5 +24,13 @@ object AppModule {
             .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
             .baseUrl(BASE_URL)
             .build()
+
+    @Provides
+    @Singleton
+    fun provideRamApi(retrofit: Retrofit): RamApi = retrofit.create(RamApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideRamRepository(api: RamApi) = RamRepository(api)
 
 }
