@@ -12,13 +12,16 @@ interface CharacterDao {
     suspend fun deleteAll()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCharacter(character: LocalCharacter)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacters(characters: List<LocalCharacter>)
 
     @Query("SELECT * FROM characters")
     suspend fun getAllCharacters(): List<LocalCharacter>
 
     @Query("SELECT * FROM characters WHERE id = :id")
-    suspend fun getCharacterById(id: Int): LocalCharacter
+    suspend fun getCharacterById(id: Int): LocalCharacter?
 
     @Query("SELECT * FROM characters WHERE name LIKE '%' || :name || '%'")
     suspend fun findCharactersByName(name: String): List<LocalCharacter>

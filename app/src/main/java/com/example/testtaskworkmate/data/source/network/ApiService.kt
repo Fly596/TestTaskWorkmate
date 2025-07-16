@@ -1,9 +1,14 @@
 package com.example.testtaskworkmate.data.source.network
 
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
+
+    @GET("character/{id}")
+    suspend fun getCharacter(@Path("id") id: Int): NetworkCharacter
+
     @GET("character")
     suspend fun getCharacters(
         @Query("name")

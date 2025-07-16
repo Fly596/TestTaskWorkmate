@@ -53,7 +53,7 @@ constructor(
     private fun getCharacter(id: Int) {
         viewModelScope.launch {
             try {
-                val character = ramRepo.getCharacter(id)
+                val character = ramRepo.getCharacterById(id)
                 _uiState.update { it.copy(character = character) }
             } catch (e: Exception) {
                 e.printStackTrace()

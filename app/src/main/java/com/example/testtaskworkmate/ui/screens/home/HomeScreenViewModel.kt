@@ -32,8 +32,12 @@ constructor(private val ramRepo: RamRepository) : ViewModel() {
     val uiState = _uiState.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            ramRepo.refresh()
+            _uiState.update { it.copy(characters = ramRepo.fetchCharacters()) }
+        }
         // Загрузка данных при инициализации ViewModel.
-        getCharacters()
+        // getCharacters()
     }
 
     private fun getCharacters() {
