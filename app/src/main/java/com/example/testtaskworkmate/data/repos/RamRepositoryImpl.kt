@@ -10,8 +10,17 @@ import javax.inject.Singleton
 
 interface RamRepository {
 
+    suspend fun getFilteredNetworkCharacters(
+        name: String?,
+        status: String?,
+        species: String?,
+        gender: String?,
+        type: String?,
+    ): List<NetworkCharacter>
+
     suspend fun getNetworkCharacters(): List<NetworkCharacter>
 
+    suspend fun findCharactersByName(name: String): List<NetworkCharacter>
 }
 
 @Singleton
@@ -46,5 +55,27 @@ constructor(
         }
     }
 
+    override suspend fun getFilteredNetworkCharacters(
+        name: String?,
+        status: String?,
+        species: String?,
+        gender: String?,
+        type: String?,
+    ): List<NetworkCharacter> {
 
+        val networkCharacters =
+            networkDataSource
+                .getCharacters(name, status, species, gender, type)
+                .results
+
+        val characterEntities = networkCharacters.map { it.toEntity() }
+
+        return characterEntities.toNetwork()
+    }
+
+    override suspend fun findCharactersByName(
+        name: String
+    ): List<NetworkCharacter> {
+        return characterDao.findCharactersByName(name).toNetwork()
+    }
 }

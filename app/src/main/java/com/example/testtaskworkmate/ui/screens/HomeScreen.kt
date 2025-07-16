@@ -56,7 +56,7 @@ fun HomeScreenNew(
             topBar = {
                 HomeScreenTopBar(
                     onSearchClick = {
-                        homeScreenViewModel.onSearchQuerySubmitted(it)
+                        homeScreenViewModel.onSearchByNameQuerySubmitted(it)
                     }
                 )
             },

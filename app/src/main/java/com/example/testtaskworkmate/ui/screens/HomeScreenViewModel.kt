@@ -14,6 +14,11 @@ import javax.inject.Inject
 data class HomeScreenUiState(
     val characters: List<NetworkCharacter> = emptyList(),
     val searchQuery: String = "",
+    val nameFilter: String = "",
+    val statusFilter: String? = null,
+    val speciesFilter: String? = null,
+    val genderFilter: String? = null,
+    val typeFilter: String? = null,
 )
 
 @HiltViewModel
@@ -27,29 +32,65 @@ constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
+        // Загрузка данных при инициализации ViewModel.
         getCharacters()
     }
 
     private fun getCharacters() {
         viewModelScope.launch {
             val characters = ramRepo.getNetworkCharacters()
+            /*  val characters = ramRepo.filterNetworkCharacters(
+                 name = _uiState.value.nameFilter.takeIf { it.isNotBlank() },
+                 status = _uiState.value.statusFilter,
+                 species = _uiState.value.speciesFilter,
+                 gender = _uiState.value.genderFilter,
+                 type = _uiState.value.typeFilter
+             ) */
             _uiState.update { it.copy(characters = characters) }
         }
     }
 
-    fun onSearchQueryChanged(query: String) {
-        _uiState.update { it.copy(searchQuery = query) }
+
+    fun onSearchByNameQuerySubmitted(query: String) {
+        // TODO: настроить поля фильтра.
+        viewModelScope.launch {
+            val filteredCharacters =
+                if (query.isEmpty()) {
+                    _uiState.value.characters
+                } else {
+                    ramRepo.getFilteredNetworkCharacters(
+                        name = query,
+                        status = _uiState.value.statusFilter,
+                        species = _uiState.value.speciesFilter,
+                        gender = _uiState.value.genderFilter,
+                        type = _uiState.value.typeFilter
+                    )
+                    /* _uiState.value.characters.filter {
+                        it.name.contains(query, ignoreCase = true)
+                    } */
+                }
+            _uiState.update { it.copy(characters = filteredCharacters) }
+        }
+
     }
 
-    fun onSearchQuerySubmitted(query: String) {
-        val filteredCharacters =
-            if (query.isEmpty()) {
-                _uiState.value.characters
-            } else {
-                _uiState.value.characters.filter {
-                    it.name.contains(query, ignoreCase = true)
-                }
-            }
-        _uiState.update { it.copy(characters = filteredCharacters) }
+    fun nameFilterChanged(name: String) {
+        _uiState.update { it.copy(nameFilter = name) }
+    }
+
+    fun statusFilterChanged(status: String) {
+        _uiState.update { it.copy(statusFilter = status) }
+    }
+
+    fun speciesFilterChanged(species: String) {
+        _uiState.update { it.copy(speciesFilter = species) }
+    }
+
+    fun genderFilterChanged(gender: String) {
+        _uiState.update { it.copy(genderFilter = gender) }
+    }
+
+    fun typeFilterChanged(type: String) {
+        _uiState.update { it.copy(typeFilter = type) }
     }
 }
