@@ -1,11 +1,11 @@
-package com.example.testtaskworkmate.data.model
+package com.example.testtaskworkmate.data.source.network
 
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class ApiResponse(
     val info: Info,
-    val results: List<Character>
+    val results: List<NetworkCharacter>
 )
 
 @Serializable
@@ -17,7 +17,7 @@ data class Info(
 )
 
 @Serializable
-data class Character(
+data class NetworkCharacter(
     val id: Int,
     val name: String,
     val status: String,

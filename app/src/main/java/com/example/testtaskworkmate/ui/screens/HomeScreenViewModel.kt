@@ -6,15 +6,15 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coil.network.HttpException
-import com.example.testtaskworkmate.data.model.Character
 import com.example.testtaskworkmate.data.repos.RamRepositoryImpl
+import com.example.testtaskworkmate.data.source.network.NetworkCharacter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import okio.IOException
 import javax.inject.Inject
 
 sealed interface HomeScreenUiState {
-    data class Success(val characters: List<Character>) : HomeScreenUiState
+    data class Success(val networkCharacters: List<NetworkCharacter>) : HomeScreenUiState
 
     object Error : HomeScreenUiState
 

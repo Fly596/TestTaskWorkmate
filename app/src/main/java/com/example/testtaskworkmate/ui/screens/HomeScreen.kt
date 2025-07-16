@@ -38,8 +38,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.testtaskworkmate.R
-import com.example.testtaskworkmate.data.model.Character
-import com.example.testtaskworkmate.data.model.CharacterLocation
+import com.example.testtaskworkmate.data.source.network.CharacterLocation
+import com.example.testtaskworkmate.data.source.network.NetworkCharacter
 import com.example.testtaskworkmate.ui.theme.TestTaskWorkmateTheme
 
 @Composable
@@ -81,7 +81,7 @@ fun HomeScreen(
                         modifier = modifier
                             .fillMaxWidth()
                             .padding(innerPadding),
-                        characters = state.characters
+                        networkCharacters = state.networkCharacters
                     )
 
                 }
@@ -91,7 +91,7 @@ fun HomeScreen(
 
 @Composable
 fun CharactersGridScreen(
-    characters: List<Character>,
+    networkCharacters: List<NetworkCharacter>,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
@@ -101,9 +101,9 @@ fun CharactersGridScreen(
             modifier,
         contentPadding = contentPadding,
     ) {
-        items(items = characters, key = { character -> character.id }) { character ->
+        items(items = networkCharacters, key = { character -> character.id }) { character ->
             CharacterCard(
-                character = character,
+                networkCharacter = character,
                 modifier = Modifier
                     .fillMaxWidth(),
             )
@@ -112,7 +112,7 @@ fun CharactersGridScreen(
 }
 
 @Composable
-fun CharacterCard(character: Character, modifier: Modifier = Modifier) {
+fun CharacterCard(networkCharacter: NetworkCharacter, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -129,7 +129,7 @@ fun CharacterCard(character: Character, modifier: Modifier = Modifier) {
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(context = LocalContext.current)
-                    .data(character.image)
+                    .data(networkCharacter.image)
                     .crossfade(true)
                     .build(),
                 contentDescription = "Character pfp",
@@ -146,17 +146,17 @@ fun CharacterCard(character: Character, modifier: Modifier = Modifier) {
 
             Column() {
                 Text(
-                    text = character.name,
+                    text = networkCharacter.name,
                     style = MaterialTheme.typography.headlineSmall,
                 )
-                Text(text = character.type)
-                Text(text = "Species: ${character.species}")
-                Text(text = "Gender: ${character.gender}")
+                Text(text = networkCharacter.type)
+                Text(text = "Species: ${networkCharacter.species}")
+                Text(text = "Gender: ${networkCharacter.gender}")
 
                 // Статус.
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     val statusColor =
-                        when (character.status) {
+                        when (networkCharacter.status) {
                             "Dead" -> Color.Red
                             "Alive" -> Color.Green
                             else -> Color.Black
@@ -171,7 +171,7 @@ fun CharacterCard(character: Character, modifier: Modifier = Modifier) {
                         modifier = Modifier.size(12.dp),
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = "Status: ${character.status}")
+                    Text(text = "Status: ${networkCharacter.status}")
                 }
             }
         }
@@ -181,8 +181,8 @@ fun CharacterCard(character: Character, modifier: Modifier = Modifier) {
 @Composable
 @Preview
 fun CharacterCardPreview() {
-    val character =
-        Character(
+    val networkCharacter =
+        NetworkCharacter(
             id = 1,
             name = "Rick Sanchez",
             status = "Alive",
@@ -207,8 +207,8 @@ fun CharacterCardPreview() {
 
     TestTaskWorkmateTheme {
         Column(modifier = Modifier.fillMaxSize()) {
-            CharacterCard(character = character)
-            CharacterCard(character = character)
+            CharacterCard(networkCharacter = networkCharacter)
+            CharacterCard(networkCharacter = networkCharacter)
         }
     }
 }
