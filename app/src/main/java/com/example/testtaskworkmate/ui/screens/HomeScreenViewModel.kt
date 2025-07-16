@@ -40,7 +40,9 @@ constructor(private val ramRepo: RamRepositoryImpl) : ViewModel() {
             homeUiState = HomeScreenUiState.Loading
             homeUiState =
                 try {
-                    HomeScreenUiState.Success(ramRepo.getCharacters())
+                    HomeScreenUiState.Success(
+                        ramRepo.getNetworkCharacters()
+                    )
                 } catch (e: IOException) {
                     HomeScreenUiState.Error
                 } catch (e: HttpException) {

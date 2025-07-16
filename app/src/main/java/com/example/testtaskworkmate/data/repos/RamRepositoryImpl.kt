@@ -2,6 +2,7 @@ package com.example.testtaskworkmate.data.repos
 
 import com.example.testtaskworkmate.data.source.local.CharacterDao
 import com.example.testtaskworkmate.data.source.local.toEntity
+import com.example.testtaskworkmate.data.source.local.toNetwork
 import com.example.testtaskworkmate.data.source.network.NetworkCharacter
 import com.example.testtaskworkmate.data.source.network.NetworkDataSource
 import javax.inject.Inject
@@ -9,7 +10,8 @@ import javax.inject.Singleton
 
 interface RamRepository {
 
-    suspend fun getCharacters(): List<NetworkCharacter>
+    suspend fun getNetworkCharacters(): List<NetworkCharacter>
+
 }
 
 @Singleton
@@ -20,13 +22,29 @@ constructor(
     private val characterDao: CharacterDao,
 ) : RamRepository {
 
-    override suspend fun getCharacters(): List<NetworkCharacter> {
-        val networkCharacters = networkDataSource.getCharacters().results
+    override suspend fun getNetworkCharacters(): List<NetworkCharacter> {
+        val localCharacters = characterDao.getAllCharacters()
 
-        val characterEntities = networkCharacters.map { it.toEntity() }
+        // Проверка наличия данных в локальной базе данных.
+        if (localCharacters.isNotEmpty()) {
+            return localCharacters.toNetwork()
+        } else {
 
-        characterDao.insertCharacters(characterEntities)
+            // Если данных нет, делаем запрос к API и сохраняем в локальную базу
+            // данных.
+            val networkCharacters = networkDataSource.getCharacters().results
 
-        return networkCharacters
+            val characterEntities = networkCharacters.map { it.toEntity() }
+
+            characterDao.insertCharacters(characterEntities)
+
+            // Получаем обновленные данные из локальной базы данных.
+            val newLocalCharacters = characterDao.getAllCharacters()
+
+            // Возвращаем список NetworkCharacter.
+            return newLocalCharacters.toNetwork()
+        }
     }
+
+
 }

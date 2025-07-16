@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import com.example.testtaskworkmate.data.source.network.CharacterLocation
 import com.example.testtaskworkmate.data.source.network.NetworkCharacter
 
 @Entity(tableName = "characters")
@@ -52,4 +53,25 @@ fun NetworkCharacter.toEntity(): LocalCharacters {
         url = this.url,
         created = this.created,
     )
+}
+
+fun LocalCharacters.toNetwork(): NetworkCharacter {
+    return NetworkCharacter(
+        id = this.id,
+        name = this.name,
+        status = this.status,
+        species = this.species,
+        type = this.type,
+        gender = this.gender,
+        origin = CharacterLocation(this.originName, this.originUrl),
+        location = CharacterLocation(this.locationName, this.locationUrl),
+        image = this.image,
+        episode = this.episode,
+        url = this.url,
+        created = this.created,
+    )
+}
+
+fun List<LocalCharacters>.toNetwork(): List<NetworkCharacter> {
+    return this.map { it.toNetwork() }
 }
