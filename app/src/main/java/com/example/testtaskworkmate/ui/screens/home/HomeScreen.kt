@@ -16,8 +16,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -34,6 +34,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -90,7 +91,6 @@ fun HomeScreenNew(
                     Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
-                        .safeDrawingPadding()
                         .padding(horizontal = 16.dp)
             ) {
 
@@ -99,7 +99,7 @@ fun HomeScreenNew(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement =
                         Arrangement
-                            .SpaceAround, // Равномерно распределяем фильтры
+                            .SpaceBetween, // Равномерно распределяем фильтры
                 ) {
                     FilterDropdown(
                         label = "Status",
@@ -130,6 +130,7 @@ fun HomeScreenNew(
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { homeScreenViewModel.filterCharacters() },
+                    shape = ShapeDefaults.Small,
                 ) {
                     Text("Apply filters")
                 }
@@ -157,9 +158,12 @@ fun FilterDropdown(
         }
     }
 
-    Box(modifier = Modifier.padding(8.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = selected ?: "Choose $label")
+    Box(modifier = Modifier.padding(vertical = 8.dp)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.clickable(onClick = { expanded = !expanded }),
+        ) {
+            Text(text = selected ?: "Choose $label", style = MaterialTheme.typography.bodySmall)
             IconButton(onClick = { expanded = true }) {
                 Icon(
                     painter = painterResource(R.drawable.arrow_dropdown),
@@ -285,6 +289,7 @@ fun HomeScreenTopBar(
     // TopAppBar - это стандартный компонент для верхних панелей.
     // Он автоматически обрабатывает отступы для статус-бара.
     TopAppBar(
+        windowInsets = WindowInsets.statusBars,
         title = {
             OutlinedTextField(
                 value = input.value,
@@ -295,12 +300,16 @@ fun HomeScreenTopBar(
             )
         },
         actions = {
-            IconButton(onClick = { onSearchClick(input.value) }) {
+            IconButton(
+                onClick = { onSearchClick(input.value) },
+                modifier = Modifier.padding(horizontal = 8.dp),
+            ) {
                 Icon(
                     painter =
                         painterResource(R.drawable.search_wght400_grad0_opsz24),
                     contentDescription = "Search",
                     tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(32.dp),
                 )
             }
         },
@@ -339,7 +348,7 @@ fun ErrorScreen(error: String = "", modifier: Modifier) {
                     id = R.drawable.error_24dp_000000_fill0_wght400_grad0_opsz24
                 ),
             contentDescription = "",
-            modifier = Modifier.size(150.dp)
+            modifier = Modifier.size(150.dp),
         )
         Text(text = error, modifier = Modifier.padding(16.dp))
     }

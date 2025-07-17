@@ -16,7 +16,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-data class DetailsUiState(val character: NetworkCharacter? = null)
+data class DetailsUiState(
+    val character: NetworkCharacter? = null,
+    val isLoading: Boolean = false,
+    val error: String? = null,
+)
 
 @HiltViewModel
 class DetailsViewModel
@@ -26,13 +30,13 @@ constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    // val characterId: Int = checkNotNull(savedStateHandle["characterId"])
-
-    // 1. Получить данные из бд.
-    // 2. Обновить state.
+    private val _uiState = MutableStateFlow(DetailsUiState())
+    val uiState = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            // Получение данных выбранного персонажа.
             withContext(Dispatchers.IO) {
                 try {
                     val args = savedStateHandle.toRoute<Details>()
@@ -41,12 +45,10 @@ constructor(
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
+                _uiState.update { it.copy(isLoading = false) }
             }
         }
     }
-
-    private val _uiState = MutableStateFlow(DetailsUiState())
-    val uiState = _uiState.asStateFlow()
 
     private fun getCharacter(id: Int) {
         viewModelScope.launch {

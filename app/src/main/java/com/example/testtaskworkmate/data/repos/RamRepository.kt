@@ -15,12 +15,13 @@ interface RamRepository {
 
     suspend fun refresh()
 
-    suspend fun getCharacterById(id: Int): NetworkCharacter
+    suspend fun getCharacterById(id: Int): NetworkCharacter?
 
     suspend fun getCharactersByName(name: String): List<NetworkCharacter>
 
-    suspend fun getFilteredCharacters(filters: CharacterFilters): List<NetworkCharacter>
-
+    suspend fun getFilteredCharacters(
+        filters: CharacterFilters
+    ): List<NetworkCharacter>
 }
 
 @Singleton
@@ -63,14 +64,18 @@ constructor(
         return characterDao.findCharactersByName(name).toNetwork()
     }
 
-    override suspend fun getFilteredCharacters(filters: CharacterFilters): List<NetworkCharacter> {
-        return characterDao.getFilteredCharacters(
-            name = filters.name,
-            statuses = filters.status,
-            genders = filters.genders,
-            species = filters.species,
-            type = filters.types
-        ).toNetwork()
+    override suspend fun getFilteredCharacters(
+        filters: CharacterFilters
+    ): List<NetworkCharacter> {
+        return characterDao
+            .getFilteredCharacters(
+                name = filters.name,
+                statuses = filters.status,
+                genders = filters.genders,
+                species = filters.species,
+                type = filters.types,
+            )
+            .toNetwork()
     }
 
     // Обновляет данные из интернета.
@@ -87,13 +92,16 @@ constructor(
         characterDao.insertCharacters(characterEntities)
     }
 
-    override suspend fun getCharacterById(id: Int): NetworkCharacter {
+    override suspend fun getCharacterById(id: Int): NetworkCharacter? {
         val localCharacter = characterDao.getCharacterById(id)
+
         if (localCharacter != null) {
             return localCharacter.toNetwork()
+        } else {
+            // Объекта нет в локальной БД, поэтому поулчаем данные из API.
+            val networkCharacter = networkRepository.getCharacter(id)
+            characterDao.insertCharacter(networkCharacter.toEntity())
+            return networkCharacter
         }
-        val networkCharacter = networkRepository.getCharacter(id)
-        characterDao.insertCharacter(networkCharacter.toEntity())
-        return networkCharacter
     }
 }

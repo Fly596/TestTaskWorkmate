@@ -2,11 +2,11 @@ package com.example.testtaskworkmate.ui.screens.details
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,6 +15,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,15 +50,14 @@ fun DetailsScreen(
                 title = {
                     Text(
                         text = character?.name ?: "No",
-                        fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.displaySmall,
                     )
                 },
                 colors =
                     TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        titleContentColor =
-                            MaterialTheme.colorScheme.onSurfaceVariant,
+                        containerColor =
+                            MaterialTheme.colorScheme.surfaceVariant,
+                        titleContentColor = MaterialTheme.colorScheme.onSurface,
                     ),
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
@@ -71,26 +71,31 @@ fun DetailsScreen(
             )
         },
     ) { innerPadding ->
+        if (state.value.isLoading) {
+            CircularProgressIndicator()
+        }
         if (character != null) {
             LazyColumn(
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                        .padding(horizontal = 16.dp)
-                        .safeDrawingPadding(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
+
             ) {
                 // Изображение персонажа
                 item {
-                    AsyncImage(
+                    SubcomposeAsyncImage(
                         model = character.image,
                         contentDescription = "${character.name} image",
                         modifier =
                             Modifier
-                                .size(300.dp)
+                                .fillMaxWidth()
                                 .clip(RoundedCornerShape(12.dp)),
                         contentScale = ContentScale.Crop,
+                        loading = {
+                            CircularProgressIndicator()
+                        }
                     )
                 }
 

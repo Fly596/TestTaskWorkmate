@@ -37,20 +37,13 @@ constructor(private val ramRepo: RamRepository) : ViewModel() {
 
     init {
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+
             ramRepo.refresh()
-            _uiState.update { it.copy(characters = ramRepo.fetchCharacters()) }
+            _uiState.update { it.copy(characters = ramRepo.fetchCharacters(), isLoading = false) }
         }
         // Загрузка данных при инициализации ViewModel.
         // getCharacters()
-    }
-
-    private fun getCharacters() {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                val characters = ramRepo.fetchCharacters()
-                _uiState.update { it.copy(characters = characters) }
-            }
-        }
     }
 
     fun onSearchByNameQuerySubmitted(query: String) {
@@ -67,6 +60,8 @@ constructor(private val ramRepo: RamRepository) : ViewModel() {
 
     fun filterCharacters() {
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+
             withContext(Dispatchers.IO) {
                 val filters: CharacterFilters =
                     CharacterFilters(
@@ -77,7 +72,7 @@ constructor(private val ramRepo: RamRepository) : ViewModel() {
                         types = _uiState.value.type,
                     )
                 val filteredData = ramRepo.getFilteredCharacters(filters)
-                if (!filteredData.isEmpty()) {
+                if (filteredData.isNotEmpty()) {
                     _uiState.update { it.copy(characters = filteredData) }
                 } else {
                     _uiState.update {
@@ -89,6 +84,8 @@ constructor(private val ramRepo: RamRepository) : ViewModel() {
                 }
 
             }
+            _uiState.update { it.copy(isLoading = false) }
+
 
         }
     }
