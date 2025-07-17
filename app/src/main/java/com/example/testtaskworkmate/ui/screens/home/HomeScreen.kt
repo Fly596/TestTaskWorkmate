@@ -79,7 +79,7 @@ fun HomeScreenNew(
                         selected = state.value.status,
                         menuItems = listOf("alive", "dead", "unknown"),
                         onSelected = {
-                            homeScreenViewModel.typeFilterChanged(it)
+                            homeScreenViewModel.statusFilterChanged(it)
                         },
                     )
                     FilterDropdown(
@@ -100,9 +100,7 @@ fun HomeScreenNew(
                         },
                     )
                     Button(
-                        onClick = {
-                            // TODO filter
-                        }
+                        onClick = { homeScreenViewModel.filterCharacters() }
                     ) {
                         Text("Apply filters")
                     }
@@ -149,8 +147,7 @@ fun FilterDropdown(
             Text(text = selected ?: "Choose $label")
             IconButton(onClick = { expanded = true }) {
                 Icon(
-                    painter =
-                        painterResource(R.drawable.arrow_dropdown),
+                    painter = painterResource(R.drawable.arrow_dropdown),
                     contentDescription = "Filter",
                     modifier = Modifier.size(28.dp),
                 )
@@ -163,10 +160,7 @@ fun FilterDropdown(
         ) {
             DropdownMenuItem(
                 text = { Text("Not selected") },
-                onClick = {
-                    onSelected(null)
-                    expanded = false
-                },
+                onClick = { expanded = false },
             )
             menuItems.forEach { option ->
                 DropdownMenuItem(

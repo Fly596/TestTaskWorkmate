@@ -24,7 +24,6 @@ data class HomeScreenUiState(
     val gender: String? = null,
     val species: String? = null,
     val type: String? = null,
-
 )
 
 @HiltViewModel
@@ -63,34 +62,25 @@ constructor(private val ramRepo: RamRepository) : ViewModel() {
                 }
             _uiState.update { it.copy(characters = filteredCharacters) }
         }
-
-        // TODO: настроить поля фильтра.
-        /*         viewModelScope.launch {
-        val filteredCharacters =
-            if (query.isEmpty()) {
-                _uiState.value.characters
-            } else {
-                ramRepo.getFilteredNetworkCharacters(
-                    name = query,
-                    status = _uiState.value.statusFilter,
-                    species = _uiState.value.speciesFilter,
-                    gender = _uiState.value.genderFilter,
-                    type = _uiState.value.typeFilter
-                )
-                 */
-        /* _uiState.value.characters.filter {
-            it.name.contains(query, ignoreCase = true)
-        } */
-        /*
-                }
-            _uiState.update { it.copy(characters = filteredCharacters) }
-        } */
-
     }
-    fun updateCharactersFilters(characterFilters: CharacterFilters?) {
-        _uiState.update {
-            it.copy(characterFilters = characterFilters)
+
+    fun filterCharacters() {
+        viewModelScope.launch {
+            val filters: CharacterFilters =
+                CharacterFilters(
+                    name = _uiState.value.name,
+                    status = _uiState.value.status,
+                    genders = _uiState.value.gender,
+                    species = _uiState.value.species,
+                    types = _uiState.value.type,
+                )
+            val filteredData = ramRepo.getFilteredCharacters(filters)
+            _uiState.update { it.copy(characters = filteredData) }
         }
+    }
+
+    fun updateCharactersFilters(characterFilters: CharacterFilters?) {
+        _uiState.update { it.copy(characterFilters = characterFilters) }
     }
 
     fun nameFilterChanged(name: String?) {
