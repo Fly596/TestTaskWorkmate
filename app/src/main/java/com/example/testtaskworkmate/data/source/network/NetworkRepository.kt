@@ -1,5 +1,6 @@
 package com.example.testtaskworkmate.data.source.network
 
+import com.example.testtaskworkmate.data.api.ApiService
 import javax.inject.Inject
 
 interface NetworkRepository {

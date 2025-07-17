@@ -2,11 +2,11 @@ package com.example.testtaskworkmate.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.testtaskworkmate.data.api.ApiService
 import com.example.testtaskworkmate.data.repos.RamRepository
 import com.example.testtaskworkmate.data.repos.RamRepositoryImpl
 import com.example.testtaskworkmate.data.source.local.AppDatabase
 import com.example.testtaskworkmate.data.source.local.CharacterDao
-import com.example.testtaskworkmate.data.source.network.ApiService
 import com.example.testtaskworkmate.data.source.network.NetworkRepository
 import com.example.testtaskworkmate.data.source.network.NetworkRepositoryImpl
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory

@@ -1,5 +1,7 @@
-package com.example.testtaskworkmate.data.source.network
+package com.example.testtaskworkmate.data.api
 
+import com.example.testtaskworkmate.data.source.network.ApiResponse
+import com.example.testtaskworkmate.data.source.network.NetworkCharacter
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

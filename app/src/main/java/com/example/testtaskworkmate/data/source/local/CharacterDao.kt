@@ -8,14 +8,14 @@ import androidx.room.Query
 @Dao
 interface CharacterDao {
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCharacters(characters: List<LocalCharacter>)
+
     @Query("DELETE FROM characters")
     suspend fun deleteAll()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCharacter(character: LocalCharacter)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCharacters(characters: List<LocalCharacter>)
 
     @Query("SELECT * FROM characters")
     suspend fun getAllCharacters(): List<LocalCharacter>
