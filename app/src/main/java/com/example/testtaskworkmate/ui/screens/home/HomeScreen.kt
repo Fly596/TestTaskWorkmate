@@ -77,7 +77,7 @@ fun HomeScreenNew(
                     FilterDropdown(
                         label = "Status",
                         selected = state.value.status,
-                        menuItems = listOf("alive", "dead", "unknown"),
+                        menuItems = listOf("Alive", "Dead", "unknown"),
                         onSelected = {
                             homeScreenViewModel.statusFilterChanged(it)
                         },
@@ -88,11 +88,11 @@ fun HomeScreenNew(
                         onSelected = {
                             homeScreenViewModel.speciesFilterChanged(it)
                         },
-                        menuItems = listOf("human", "alien"),
+                        menuItems = listOf("Human", "Alien"),
                     )
                     FilterDropdown(
                         menuItems =
-                            listOf("male", "female", "unknown", "genderless"),
+                            listOf("Male", "Female", "unknown", "Genderless"),
                         label = "Gender",
                         selected = state.value.gender,
                         onSelected = {

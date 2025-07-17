@@ -66,16 +66,19 @@ constructor(private val ramRepo: RamRepository) : ViewModel() {
 
     fun filterCharacters() {
         viewModelScope.launch {
-            val filters: CharacterFilters =
-                CharacterFilters(
-                    name = _uiState.value.name,
-                    status = _uiState.value.status,
-                    genders = _uiState.value.gender,
-                    species = _uiState.value.species,
-                    types = _uiState.value.type,
-                )
-            val filteredData = ramRepo.getFilteredCharacters(filters)
-            _uiState.update { it.copy(characters = filteredData) }
+            withContext(Dispatchers.IO) {
+                val filters: CharacterFilters =
+                    CharacterFilters(
+                        name = _uiState.value.name,
+                        status = _uiState.value.status,
+                        genders = _uiState.value.gender,
+                        species = _uiState.value.species,
+                        types = _uiState.value.type,
+                    )
+                val filteredData = ramRepo.getFilteredCharacters(filters)
+                _uiState.update { it.copy(characters = filteredData) }
+            }
+
         }
     }
 
