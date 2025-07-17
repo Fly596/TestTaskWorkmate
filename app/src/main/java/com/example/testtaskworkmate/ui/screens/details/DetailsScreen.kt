@@ -1,13 +1,15 @@
 package com.example.testtaskworkmate.ui.screens.details
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -38,13 +40,18 @@ fun DetailsScreen(
     val state = viewModel.uiState.collectAsStateWithLifecycle()
     val character = state.value.character
     Scaffold(
+
+        modifier = Modifier
+            .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.safeDrawing),
         topBar = {
             TopAppBar(
                 title = { Text(text = character?.name ?: "No", fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                ),
+                modifier = Modifier.padding(vertical = 8.dp)
             )
         }
     ) { innerPadding ->
@@ -62,14 +69,8 @@ fun DetailsScreen(
                         model = character.image,
                         contentDescription = "${character.name} image",
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .size(200.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .border(
-                                2.dp,
-                                MaterialTheme.colorScheme.primary,
-                                RoundedCornerShape(12.dp)
-                            ),
+                            .size(300.dp)
+                            .clip(RoundedCornerShape(12.dp)),
                         contentScale = ContentScale.Crop
                     )
                 }

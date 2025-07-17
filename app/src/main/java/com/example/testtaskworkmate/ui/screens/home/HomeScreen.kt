@@ -57,74 +57,72 @@ fun HomeScreenNew(
     homeScreenViewModel: HomeScreenViewModel = hiltViewModel(),
     onCharacterClick: (Int) -> Unit = {},
 ) {
-    val state = homeScreenViewModel.uiState.collectAsStateWithLifecycle()
 
-    TestTaskWorkmateTheme {
-        Scaffold(
-            modifier = modifier.fillMaxSize(),
-            topBar = {
-                HomeScreenTopBar(
-                    onSearchClick = {
-                        homeScreenViewModel.onSearchByNameQuerySubmitted(it)
-                    }
-                )
-            },
-        ) { innerPadding ->
-            Column(modifier = Modifier.padding(innerPadding)) {
-
-                // Фильтры.
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    FilterDropdown(
-                        label = "Status",
-                        selected = state.value.status,
-                        menuItems = listOf("Alive", "Dead", "unknown"),
-                        onSelected = {
-                            homeScreenViewModel.statusFilterChanged(it)
-                        },
-                    )
-                    FilterDropdown(
-                        label = "Species",
-                        selected = state.value.species,
-                        onSelected = {
-                            homeScreenViewModel.speciesFilterChanged(it)
-                        },
-                        menuItems = listOf("Human", "Alien"),
-                    )
-                    FilterDropdown(
-                        menuItems =
-                            listOf("Male", "Female", "unknown", "Genderless"),
-                        label = "Gender",
-                        selected = state.value.gender,
-                        onSelected = {
-                            homeScreenViewModel.genderFilterChanged(it)
-                        },
-                    )
-                    Button(
-                        onClick = { homeScreenViewModel.filterCharacters() }
-                    ) {
-                        Text("Apply filters")
-                    }
+    Scaffold(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
+        topBar = {
+            HomeScreenTopBar(
+                onSearchClick = {
+                    homeScreenViewModel.onSearchByNameQuerySubmitted(it)
                 }
-                CharactersGridScreen(
-                    modifier = Modifier,
-                    networkCharacters = state.value.characters,
-                    onCharacterClick = onCharacterClick,
+            )
+        },
+    ) { innerPadding ->
+        val state = homeScreenViewModel.uiState.collectAsStateWithLifecycle()
+
+        Column(modifier = Modifier.padding(innerPadding)) {
+
+            // Фильтры.
+            Row(modifier = Modifier.fillMaxWidth()) {
+                FilterDropdown(
+                    label = "Status",
+                    selected = state.value.status,
+                    menuItems = listOf("Alive", "Dead", "unknown"),
+                    onSelected = { homeScreenViewModel.statusFilterChanged(it) },
+                )
+                FilterDropdown(
+                    label = "Species",
+                    selected = state.value.species,
+                    onSelected = {
+                        homeScreenViewModel.speciesFilterChanged(it)
+                    },
+                    menuItems = listOf("Human", "Alien"),
+                )
+                FilterDropdown(
+                    menuItems =
+                        listOf("Male", "Female", "unknown", "Genderless"),
+                    label = "Gender",
+                    selected = state.value.gender,
+                    onSelected = { homeScreenViewModel.genderFilterChanged(it) },
                 )
             }
-
-            /*             Column(modifier = Modifier.padding(innerPadding)) {
-                Row(modifier = Modifier.fillMaxWidth()){
-                    DropdownMenu(menuItems = listOf("alive", "dead", "unknown"), filterValue = "Status")
-                    Spacer(modifier = Modifier.width(16.dp))
-                    DropdownMenu(menuItems = listOf("human", "alien"), filterValue = "Species")
-                    Spacer(modifier = Modifier.width(16.dp))
-                }
-                CharactersGridScreen(
-                    modifier = Modifier.fillMaxWidth().padding(innerPadding),
-                    networkCharacters = state.value.characters,
-                )
-            } */
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { homeScreenViewModel.filterCharacters() },
+            ) {
+                Text("Apply filters")
+            }
+            CharactersGridScreen(
+                modifier = Modifier,
+                networkCharacters = state.value.characters,
+                onCharacterClick = onCharacterClick,
+            )
         }
+
+        /*             Column(modifier = Modifier.padding(innerPadding)) {
+            Row(modifier = Modifier.fillMaxWidth()){
+                DropdownMenu(menuItems = listOf("alive", "dead", "unknown"), filterValue = "Status")
+                Spacer(modifier = Modifier.width(16.dp))
+                DropdownMenu(menuItems = listOf("human", "alien"), filterValue = "Species")
+                Spacer(modifier = Modifier.width(16.dp))
+            }
+            CharactersGridScreen(
+                modifier = Modifier.fillMaxWidth().padding(innerPadding),
+                networkCharacters = state.value.characters,
+            )
+        } */
     }
 }
 
@@ -308,9 +306,7 @@ fun HomeScreenTopBar(
     val input = remember { mutableStateOf("") }
 
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 32.dp),
+        modifier = modifier.padding(top = 32.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // Поле для поиска персонажей.
@@ -319,8 +315,9 @@ fun HomeScreenTopBar(
             onValueChange = { input.value = it },
             label = { Text("Search characters") },
             singleLine = true,
-            modifier = Modifier,
+            modifier = Modifier.weight(1f)
         )
+
 
         // Кнопка для поиска.
         IconButton(
