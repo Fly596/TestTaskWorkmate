@@ -28,7 +28,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -147,23 +146,15 @@ fun FilterDropdown(
 
     Box(modifier = Modifier.padding(8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            TextField(
-                value = selected ?: "Choose $label",
-                onValueChange = {},
-                label = { Text(label) },
-                modifier = Modifier.fillMaxWidth(),
-                readOnly = true,
-                trailingIcon = {
-                    IconButton(onClick = { expanded = true }) {
-                        Icon(
-                            painter =
-                                painterResource(R.drawable.arrow_dropdown),
-                            contentDescription = "Filter",
-                            modifier = Modifier.size(28.dp),
-                        )
-                    }
-                },
-            )
+            Text(text = selected ?: "Choose $label")
+            IconButton(onClick = { expanded = true }) {
+                Icon(
+                    painter =
+                        painterResource(R.drawable.arrow_dropdown),
+                    contentDescription = "Filter",
+                    modifier = Modifier.size(28.dp),
+                )
+            }
         }
 
         DropdownMenu(

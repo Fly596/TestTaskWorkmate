@@ -42,9 +42,7 @@ constructor(
                     e.printStackTrace()
                 }
             }
-
         }
-        // getCharacter(characterId)
     }
 
     private val _uiState = MutableStateFlow(DetailsUiState())
