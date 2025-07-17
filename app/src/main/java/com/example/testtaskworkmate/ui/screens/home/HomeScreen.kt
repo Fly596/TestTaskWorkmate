@@ -20,14 +20,15 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -66,28 +67,39 @@ fun HomeScreenNew(
                 HomeScreenTopBar(
                     onSearchClick = {
                         homeScreenViewModel.onSearchByNameQuerySubmitted(it)
-                    },
+                    }
                 )
             },
         ) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
+
+                // Фильтры.
                 Row(modifier = Modifier.fillMaxWidth()) {
-                    DropdownMenu(
+                    FilterDropdown(
+                        label = "Status",
+                        selected = state.value.status,
                         menuItems = listOf("alive", "dead", "unknown"),
-                        filterValue = "Status",
+                        onSelected = {
+                            homeScreenViewModel.typeFilterChanged(it)
+                        },
                     )
-                    // Spacer(modifier = Modifier.width(16.dp))
-                    DropdownMenu(
+                    FilterDropdown(
+                        label = "Species",
+                        selected = state.value.species,
+                        onSelected = {
+                            homeScreenViewModel.speciesFilterChanged(it)
+                        },
                         menuItems = listOf("human", "alien"),
-                        filterValue = "Species",
                     )
-                    // Spacer(modifier = Modifier.width(16.dp))
-                    DropdownMenu(
+                    FilterDropdown(
                         menuItems =
                             listOf("male", "female", "unknown", "genderless"),
-                        filterValue = "Gender",
+                        label = "Gender",
+                        selected = state.value.gender,
+                        onSelected = {
+                            homeScreenViewModel.genderFilterChanged(it)
+                        },
                     )
-                    // Spacer(modifier = Modifier.width(16.dp))
                     Button(
                         onClick = {
                             // TODO filter
@@ -120,9 +132,11 @@ fun HomeScreenNew(
 }
 
 @Composable
-fun DropdownMenu(
+fun FilterDropdown(
+    label: String,
+    selected: String?,
     menuItems: List<String> = emptyList(),
-    filterValue: String = "filter",
+    onSelected: (String?) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
     val checkedStates = remember {
@@ -133,21 +147,46 @@ fun DropdownMenu(
 
     Box(modifier = Modifier.padding(8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = filterValue)
-            IconButton(onClick = { expanded = !expanded }) {
-                Icon(
-                    painter = painterResource(R.drawable.arrow_dropdown),
-                    contentDescription = "Filter",
-                    modifier = Modifier.size(28.dp),
-                )
-            }
+            TextField(
+                value = selected ?: "Choose $label",
+                onValueChange = {},
+                label = { Text(label) },
+                modifier = Modifier.fillMaxWidth(),
+                readOnly = true,
+                trailingIcon = {
+                    IconButton(onClick = { expanded = true }) {
+                        Icon(
+                            painter =
+                                painterResource(R.drawable.arrow_dropdown),
+                            contentDescription = "Filter",
+                            modifier = Modifier.size(28.dp),
+                        )
+                    }
+                },
+            )
         }
 
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
         ) {
-            menuItems.forEachIndexed { index, option ->
+            DropdownMenuItem(
+                text = { Text("Not selected") },
+                onClick = {
+                    onSelected(null)
+                    expanded = false
+                },
+            )
+            menuItems.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option) },
+                    onClick = {
+                        onSelected(option)
+                        expanded = false
+                    },
+                )
+            }
+            /*             menuItems.forEachIndexed { index, option ->
                 Row(
                     modifier = Modifier.padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
@@ -160,7 +199,7 @@ fun DropdownMenu(
                     )
                     Text(text = option)
                 }
-            }
+            } */
         }
     }
 }
@@ -178,9 +217,11 @@ fun CharactersGridScreen(
         contentPadding = contentPadding,
     ) {
         items(items = networkCharacters, key = { character -> character.id }) { character ->
-            CharacterCard(networkCharacter = character, modifier = Modifier, onCharacterClick = {
-                onCharacterClick(character.id)
-            })
+            CharacterCard(
+                networkCharacter = character,
+                modifier = Modifier,
+                onCharacterClick = { onCharacterClick(character.id) },
+            )
         }
     }
 }
@@ -192,13 +233,10 @@ fun CharacterCard(
     onCharacterClick: (Int) -> Unit = {},
 ) {
     Card(
-        modifier = modifier
-            .padding(8.dp)
-            .clickable(
-                onClick = {
-                    onCharacterClick(networkCharacter.id)
-                }
-            ),
+        modifier =
+            modifier
+                .padding(8.dp)
+                .clickable(onClick = { onCharacterClick(networkCharacter.id) }),
         colors =
             CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant

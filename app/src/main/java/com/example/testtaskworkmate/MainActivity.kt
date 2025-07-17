@@ -20,9 +20,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             TestTaskWorkmateTheme {
                 RamNavGraph()
-                /* Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    HomeScreenNew(modifier = Modifier.padding(innerPadding))
-                } */
             }
         }
     }

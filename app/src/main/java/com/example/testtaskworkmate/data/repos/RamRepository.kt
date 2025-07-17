@@ -1,6 +1,7 @@
 package com.example.testtaskworkmate.data.repos
 
 import com.example.testtaskworkmate.data.source.local.CharacterDao
+import com.example.testtaskworkmate.data.source.local.CharacterFilters
 import com.example.testtaskworkmate.data.source.local.toEntity
 import com.example.testtaskworkmate.data.source.local.toNetwork
 import com.example.testtaskworkmate.data.source.network.NetworkCharacter
@@ -17,6 +18,9 @@ interface RamRepository {
     suspend fun getCharacterById(id: Int): NetworkCharacter
 
     suspend fun getCharactersByName(name: String): List<NetworkCharacter>
+
+    suspend fun getFilteredCharacters(filters: CharacterFilters): List<NetworkCharacter>
+
 }
 
 @Singleton
@@ -59,13 +63,27 @@ constructor(
         return characterDao.findCharactersByName(name).toNetwork()
     }
 
+    override suspend fun getFilteredCharacters(filters: CharacterFilters): List<NetworkCharacter> {
+        return characterDao.getFilteredCharacters(
+            name = filters.name,
+            statuses = filters.status,
+            genders = filters.genders,
+            species = filters.species,
+            type = filters.types
+        ).toNetwork()
+    }
+
+    // Обновляет данные из интернета.
     override suspend fun refresh() {
+        // Запрос данных.
         val networkCharacters = networkRepository.getAllCharacters()
+        // Очистка локальной бд.
         characterDao.deleteAll()
 
         // Преобразуем список NetworkCharacter в список Entity локальной
         // базы данных.
         val characterEntities = networkCharacters.map { it.toEntity() }
+
         characterDao.insertCharacters(characterEntities)
     }
 

@@ -31,15 +31,17 @@ interface CharacterDao {
         SELECT * FROM characters 
         WHERE 
             (:name IS NULL OR name LIKE '%' || :name || '%') AND
-            (:statuses IS NULL OR status IN (:statuses)) AND
-            (:genders IS NULL OR gender IN (:genders)) AND
-            (:species IS NULL OR species IN (:species))
+            (:statuses IS NULL OR status =:statuses) AND
+            (:genders IS NULL OR gender =:genders) AND
+            (:species IS NULL OR species =:species) AND
+            (:type IS NULL OR type = :type)
     """
     )
     suspend fun getFilteredCharacters(
         name: String?,
-        statuses: List<String>?,
-        genders: List<String>?,
-        species: List<String>?,
+        statuses: String?,
+        genders: String?,
+        species: String?,
+        type: String?,
     ): List<LocalCharacter>
 }

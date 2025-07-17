@@ -3,6 +3,7 @@ package com.example.testtaskworkmate.ui.screens.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.testtaskworkmate.data.repos.RamRepository
+import com.example.testtaskworkmate.data.source.local.CharacterFilters
 import com.example.testtaskworkmate.data.source.network.NetworkCharacter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -15,12 +16,15 @@ import javax.inject.Inject
 
 data class HomeScreenUiState(
     val characters: List<NetworkCharacter> = emptyList(),
-    val searchQuery: String = "",
-    val nameFilter: String = "",
-    val statusFilter: String? = null,
-    val speciesFilter: String? = null,
-    val genderFilter: String? = null,
-    val typeFilter: String? = null,
+    val isLoading: Boolean = false,
+    val error: String? = null,
+    val characterFilters: CharacterFilters? = null,
+    val name: String? = null,
+    val status: String? = null,
+    val gender: String? = null,
+    val species: String? = null,
+    val type: String? = null,
+
 )
 
 @HiltViewModel
@@ -83,24 +87,29 @@ constructor(private val ramRepo: RamRepository) : ViewModel() {
         } */
 
     }
-
-    fun nameFilterChanged(name: String) {
-        _uiState.update { it.copy(nameFilter = name) }
+    fun updateCharactersFilters(characterFilters: CharacterFilters?) {
+        _uiState.update {
+            it.copy(characterFilters = characterFilters)
+        }
     }
 
-    fun statusFilterChanged(status: String) {
-        _uiState.update { it.copy(statusFilter = status) }
+    fun nameFilterChanged(name: String?) {
+        _uiState.update { it.copy(name = name) }
     }
 
-    fun speciesFilterChanged(species: String) {
-        _uiState.update { it.copy(speciesFilter = species) }
+    fun statusFilterChanged(status: String?) {
+        _uiState.update { it.copy(status = status) }
     }
 
-    fun genderFilterChanged(gender: String) {
-        _uiState.update { it.copy(genderFilter = gender) }
+    fun speciesFilterChanged(species: String?) {
+        _uiState.update { it.copy(species = species) }
     }
 
-    fun typeFilterChanged(type: String) {
-        _uiState.update { it.copy(typeFilter = type) }
+    fun genderFilterChanged(gender: String?) {
+        _uiState.update { it.copy(gender = gender) }
+    }
+
+    fun typeFilterChanged(type: String?) {
+        _uiState.update { it.copy(type = type) }
     }
 }

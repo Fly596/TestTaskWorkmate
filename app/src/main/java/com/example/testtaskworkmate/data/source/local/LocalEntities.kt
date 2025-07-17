@@ -7,6 +7,14 @@ import androidx.room.TypeConverters
 import com.example.testtaskworkmate.data.source.network.CharacterLocation
 import com.example.testtaskworkmate.data.source.network.NetworkCharacter
 
+data class CharacterFilters(
+    val name: String? = null,
+    val status: String? = null,
+    val genders: String? = null,
+    val species: String? = null,
+    val types: String? = null,
+)
+
 @Entity(tableName = "characters")
 @TypeConverters(Converters::class)
 data class LocalCharacter(

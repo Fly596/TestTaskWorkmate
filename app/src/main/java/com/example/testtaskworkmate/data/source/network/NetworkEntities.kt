@@ -31,3 +31,16 @@ data class NetworkCharacter(
 
 @Serializable
 data class CharacterLocation(val name: String, val url: String)
+
+enum class CharacterStatus(val statusValue: String) {
+    Alive("alive"),
+    Dead("dead"),
+    Unknown("unknown"),
+}
+
+enum class CharacterGender(val genderValue: String) {
+    Female("female"),
+    Male("male"),
+    Genderless("genderless"),
+    Unknown("unknown")
+}
