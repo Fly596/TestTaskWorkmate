@@ -29,12 +29,14 @@ fun RamNavGraph(
     ) {
         composable<Home> {
             HomeScreenNew(
-                onCharacterClick = { id -> navController.navigate(Details(id)) }
+
+                onCharacterClick = { id -> navController.navigate(Details(id)) },
             )
         }
         composable<Details> { backStackEntry ->
             val details: Details = backStackEntry.toRoute()
-            DetailsScreen()
+            DetailsScreen(
+            )
         }
     }
 }

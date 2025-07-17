@@ -59,9 +59,6 @@ fun HomeScreenNew(
 ) {
 
     Scaffold(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
         topBar = {
             HomeScreenTopBar(
                 onSearchClick = {
