@@ -36,6 +36,7 @@ fun RamNavGraph(
         composable<Details> { backStackEntry ->
             val details: Details = backStackEntry.toRoute()
             DetailsScreen(
+                onBackClick = { navController.popBackStack() },
             )
         }
     }

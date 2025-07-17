@@ -18,6 +18,7 @@ data class HomeScreenUiState(
     val characters: List<NetworkCharacter> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
+
     val characterFilters: CharacterFilters? = null,
     val name: String? = null,
     val status: String? = null,
@@ -76,7 +77,17 @@ constructor(private val ramRepo: RamRepository) : ViewModel() {
                         types = _uiState.value.type,
                     )
                 val filteredData = ramRepo.getFilteredCharacters(filters)
-                _uiState.update { it.copy(characters = filteredData) }
+                if (!filteredData.isEmpty()) {
+                    _uiState.update { it.copy(characters = filteredData) }
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            error = "No characters found",
+                            characters = emptyList()
+                        )
+                    }
+                }
+
             }
 
         }

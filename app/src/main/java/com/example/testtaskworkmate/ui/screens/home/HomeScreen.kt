@@ -75,52 +75,71 @@ fun HomeScreenNew(
         },
     ) { innerPadding ->
         val state = homeScreenViewModel.uiState.collectAsStateWithLifecycle()
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .safeDrawingPadding()
-                .padding(horizontal = 16.dp)
-        ) {
-
-            // Фильтры.
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround // Равномерно распределяем фильтры
-            ) {
-                FilterDropdown(
-                    label = "Status",
-                    selected = state.value.status,
-                    menuItems = listOf("Alive", "Dead", "unknown"),
-                    onSelected = { homeScreenViewModel.statusFilterChanged(it) },
-                )
-                FilterDropdown(
-                    label = "Species",
-                    selected = state.value.species,
-                    onSelected = { homeScreenViewModel.speciesFilterChanged(it) },
-                    menuItems = listOf("Human", "Alien"),
-                )
-                FilterDropdown(
-                    menuItems = listOf("Male", "Female", "unknown", "Genderless"),
-                    label = "Gender",
-                    selected = state.value.gender,
-                    onSelected = { homeScreenViewModel.genderFilterChanged(it) },
-                )
-            }
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = { homeScreenViewModel.filterCharacters() },
-            ) {
-                Text("Apply filters")
-            }
-            CharactersGridScreen(
-                modifier = Modifier,
-                networkCharacters = state.value.characters,
-                onCharacterClick = onCharacterClick,
+        if (state.value.isLoading) {
+            LoadingScreen(modifier = Modifier.fillMaxSize())
+        } else if (state.value.error != null) {
+            ErrorScreen(
+                modifier = Modifier.fillMaxSize(),
+                error = state.value.error.toString(),
             )
-        }
+        } else if (state.value.characters.isEmpty()) {
+            Text("No characters found")
+        } else {
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .safeDrawingPadding()
+                        .padding(horizontal = 16.dp)
+            ) {
 
+                // Фильтры.
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement =
+                        Arrangement
+                            .SpaceAround, // Равномерно распределяем фильтры
+                ) {
+                    FilterDropdown(
+                        label = "Status",
+                        selected = state.value.status,
+                        menuItems = listOf("Alive", "Dead", "unknown"),
+                        onSelected = {
+                            homeScreenViewModel.statusFilterChanged(it)
+                        },
+                    )
+                    FilterDropdown(
+                        label = "Species",
+                        selected = state.value.species,
+                        onSelected = {
+                            homeScreenViewModel.speciesFilterChanged(it)
+                        },
+                        menuItems = listOf("Human", "Alien"),
+                    )
+                    FilterDropdown(
+                        menuItems =
+                            listOf("Male", "Female", "unknown", "Genderless"),
+                        label = "Gender",
+                        selected = state.value.gender,
+                        onSelected = {
+                            homeScreenViewModel.genderFilterChanged(it)
+                        },
+                    )
+                }
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { homeScreenViewModel.filterCharacters() },
+                ) {
+                    Text("Apply filters")
+                }
+                CharactersGridScreen(
+                    modifier = Modifier,
+                    networkCharacters = state.value.characters,
+                    onCharacterClick = onCharacterClick,
+                )
+            }
+        }
     }
 }
 
@@ -167,7 +186,6 @@ fun FilterDropdown(
                     },
                 )
             }
-
         }
     }
 }
@@ -256,7 +274,6 @@ fun CharacterCard(
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenTopBar(
@@ -278,21 +295,25 @@ fun HomeScreenTopBar(
             )
         },
         actions = {
-            IconButton(
-                onClick = { onSearchClick(input.value) }
-            ) {
+            IconButton(onClick = { onSearchClick(input.value) }) {
                 Icon(
-                    painter = painterResource(R.drawable.search_wght400_grad0_opsz24),
+                    painter =
+                        painterResource(R.drawable.search_wght400_grad0_opsz24),
                     contentDescription = "Search",
                     tint = MaterialTheme.colorScheme.onSurface,
                 )
             }
         },
-        // Этот модификатор обеспечит, что TopAppBar не будет накладываться на системный статус-бар
-        modifier = modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top)),
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+        // Этот модификатор обеспечит, что TopAppBar не будет накладываться на
+        // системный статус-бар
+        modifier =
+            modifier.windowInsetsPadding(
+                WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
+            ),
+        colors =
+            TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            ),
     )
 }
 
@@ -306,17 +327,21 @@ fun LoadingScreen(modifier: Modifier) {
 }
 
 @Composable
-fun ErrorScreen(modifier: Modifier) {
+fun ErrorScreen(error: String = "", modifier: Modifier) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(
-            painter = painterResource(id = R.drawable.ic_connection_error),
+            painter =
+                painterResource(
+                    id = R.drawable.error_24dp_000000_fill0_wght400_grad0_opsz24
+                ),
             contentDescription = "",
+            modifier = Modifier.size(150.dp)
         )
-        Text(text = "loading failed", modifier = Modifier.padding(16.dp))
+        Text(text = error, modifier = Modifier.padding(16.dp))
     }
 }
 
