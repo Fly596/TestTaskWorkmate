@@ -44,6 +44,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
     val nav_version = "2.9.2"
 
     // Jetpack Compose integration

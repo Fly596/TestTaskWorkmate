@@ -8,12 +8,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -22,12 +28,15 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -40,16 +49,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.testtaskworkmate.R
-import com.example.testtaskworkmate.data.source.network.CharacterLocation
 import com.example.testtaskworkmate.data.source.network.NetworkCharacter
-import com.example.testtaskworkmate.ui.theme.TestTaskWorkmateTheme
 
 @Composable
 fun HomeScreenNew(
@@ -59,6 +65,7 @@ fun HomeScreenNew(
 ) {
 
     Scaffold(
+        modifier = modifier.fillMaxSize(),
         topBar = {
             HomeScreenTopBar(
                 onSearchClick = {
@@ -69,10 +76,19 @@ fun HomeScreenNew(
     ) { innerPadding ->
         val state = homeScreenViewModel.uiState.collectAsStateWithLifecycle()
 
-        Column(modifier = Modifier.padding(innerPadding)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .safeDrawingPadding()
+                .padding(horizontal = 16.dp)
+        ) {
 
             // Фильтры.
-            Row(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround // Равномерно распределяем фильтры
+            ) {
                 FilterDropdown(
                     label = "Status",
                     selected = state.value.status,
@@ -82,14 +98,11 @@ fun HomeScreenNew(
                 FilterDropdown(
                     label = "Species",
                     selected = state.value.species,
-                    onSelected = {
-                        homeScreenViewModel.speciesFilterChanged(it)
-                    },
+                    onSelected = { homeScreenViewModel.speciesFilterChanged(it) },
                     menuItems = listOf("Human", "Alien"),
                 )
                 FilterDropdown(
-                    menuItems =
-                        listOf("Male", "Female", "unknown", "Genderless"),
+                    menuItems = listOf("Male", "Female", "unknown", "Genderless"),
                     label = "Gender",
                     selected = state.value.gender,
                     onSelected = { homeScreenViewModel.genderFilterChanged(it) },
@@ -108,18 +121,6 @@ fun HomeScreenNew(
             )
         }
 
-        /*             Column(modifier = Modifier.padding(innerPadding)) {
-            Row(modifier = Modifier.fillMaxWidth()){
-                DropdownMenu(menuItems = listOf("alive", "dead", "unknown"), filterValue = "Status")
-                Spacer(modifier = Modifier.width(16.dp))
-                DropdownMenu(menuItems = listOf("human", "alien"), filterValue = "Species")
-                Spacer(modifier = Modifier.width(16.dp))
-            }
-            CharactersGridScreen(
-                modifier = Modifier.fillMaxWidth().padding(innerPadding),
-                networkCharacters = state.value.characters,
-            )
-        } */
     }
 }
 
@@ -166,20 +167,7 @@ fun FilterDropdown(
                     },
                 )
             }
-            /*             menuItems.forEachIndexed { index, option ->
-                Row(
-                    modifier = Modifier.padding(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Checkbox(
-                        checked = checkedStates[index],
-                        onCheckedChange = { isChecked ->
-                            checkedStates[index] = isChecked
-                        },
-                    )
-                    Text(text = option)
-                }
-            } */
+
         }
     }
 }
@@ -193,7 +181,7 @@ fun CharactersGridScreen(
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
-        modifier = modifier,
+        modifier = modifier.fillMaxSize(),
         contentPadding = contentPadding,
     ) {
         items(items = networkCharacters, key = { character -> character.id }) { character ->
@@ -268,33 +256,8 @@ fun CharacterCard(
     }
 }
 
-@Composable
-@Preview
-fun CharacterCardPreview() {
-    val networkCharacter =
-        NetworkCharacter(
-            id = 1,
-            name = "Rick Sanchez",
-            status = "Alive",
-            species = "Human",
-            type = "",
-            gender = "Male",
-            origin = CharacterLocation(name = "Earth (C-137)", url = ""),
-            location = CharacterLocation(name = "Citadel of Ricks", url = ""),
-            image = "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
-            episode = listOf("https://rickandmortyapi.com/api/episode/1"),
-            url = "https://rickandmortyapi.com/api/character/1",
-            created = "2017-11-04T18:48:46.250Z",
-        )
 
-    TestTaskWorkmateTheme {
-        Column(modifier = Modifier.fillMaxSize()) {
-            CharacterCard(networkCharacter = networkCharacter)
-            CharacterCard(networkCharacter = networkCharacter)
-        }
-    }
-}
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenTopBar(
     modifier: Modifier = Modifier,
@@ -302,35 +265,35 @@ fun HomeScreenTopBar(
 ) {
     val input = remember { mutableStateOf("") }
 
-    Row(
-        modifier = modifier.padding(top = 32.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        // Поле для поиска персонажей.
-        OutlinedTextField(
-            value = input.value,
-            onValueChange = { input.value = it },
-            label = { Text("Search characters") },
-            singleLine = true,
-            modifier = Modifier.weight(1f)
-        )
-
-
-        // Кнопка для поиска.
-        IconButton(
-            onClick = {
-                onSearchClick(input.value)
-                // TODO: search
-            }
-        ) {
-            Icon(
-                painter =
-                    painterResource(R.drawable.search_wght400_grad0_opsz24),
-                contentDescription = "Filter",
-                tint = MaterialTheme.colorScheme.onBackground,
+    // TopAppBar - это стандартный компонент для верхних панелей.
+    // Он автоматически обрабатывает отступы для статус-бара.
+    TopAppBar(
+        title = {
+            OutlinedTextField(
+                value = input.value,
+                onValueChange = { input.value = it },
+                label = { Text("Search characters") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
             )
-        }
-    }
+        },
+        actions = {
+            IconButton(
+                onClick = { onSearchClick(input.value) }
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.search_wght400_grad0_opsz24),
+                    contentDescription = "Search",
+                    tint = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+        },
+        // Этот модификатор обеспечит, что TopAppBar не будет накладываться на системный статус-бар
+        modifier = modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top)),
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    )
 }
 
 @Composable
