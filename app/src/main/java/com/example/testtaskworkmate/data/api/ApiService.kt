@@ -8,9 +8,11 @@ import retrofit2.http.Query
 
 interface ApiService {
 
+    // Получение одного персонажа по его ID.
     @GET("character/{id}")
     suspend fun getCharacter(@Path("id") id: Int): NetworkCharacter
 
+    // Получение списка персонажей.
     @GET("character")
     suspend fun getCharacters(
         @Query("name")

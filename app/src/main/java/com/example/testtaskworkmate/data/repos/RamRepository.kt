@@ -11,10 +11,13 @@ import javax.inject.Singleton
 
 interface RamRepository {
 
+    // Получение списка персонажей.
     suspend fun fetchCharacters(): List<NetworkCharacter>
 
+    // Обновление данных.
     suspend fun refresh()
 
+    // Получение одного персонажа по его ID.
     suspend fun getCharacterById(id: Int): NetworkCharacter?
 
     suspend fun getCharactersByName(name: String): List<NetworkCharacter>

@@ -18,7 +18,6 @@ data class HomeScreenUiState(
     val characters: List<NetworkCharacter> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
-
     val characterFilters: CharacterFilters? = null,
     val name: String? = null,
     val status: String? = null,
@@ -40,7 +39,12 @@ constructor(private val ramRepo: RamRepository) : ViewModel() {
             _uiState.update { it.copy(isLoading = true) }
 
             ramRepo.refresh()
-            _uiState.update { it.copy(characters = ramRepo.fetchCharacters(), isLoading = false) }
+            _uiState.update {
+                it.copy(
+                    characters = ramRepo.fetchCharacters(),
+                    isLoading = false,
+                )
+            }
         }
         // Загрузка данных при инициализации ViewModel.
         // getCharacters()
@@ -58,10 +62,23 @@ constructor(private val ramRepo: RamRepository) : ViewModel() {
         }
     }
 
+    // Фильтрация персонажей.
     fun filterCharacters() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
+            if (_uiState.value.status == "not selected") {
+                _uiState.update { it.copy(status = null) }
+            }
+            if (_uiState.value.species == "not selected") {
+                _uiState.update { it.copy(species = null) }
+            }
 
+            if (_uiState.value.type == "not selected") {
+                _uiState.update { it.copy(type = null) }
+            }
+            if (_uiState.value.gender == "not selected") {
+                _uiState.update { it.copy(gender = null) }
+            }
             withContext(Dispatchers.IO) {
                 val filters: CharacterFilters =
                     CharacterFilters(
@@ -71,6 +88,7 @@ constructor(private val ramRepo: RamRepository) : ViewModel() {
                         species = _uiState.value.species,
                         types = _uiState.value.type,
                     )
+
                 val filteredData = ramRepo.getFilteredCharacters(filters)
                 if (filteredData.isNotEmpty()) {
                     _uiState.update { it.copy(characters = filteredData) }
@@ -78,15 +96,37 @@ constructor(private val ramRepo: RamRepository) : ViewModel() {
                     _uiState.update {
                         it.copy(
                             error = "No characters found",
-                            characters = emptyList()
+                            characters = emptyList(),
                         )
                     }
                 }
-
             }
             _uiState.update { it.copy(isLoading = false) }
+        }
+    }
 
+    fun resetFilters() {
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    characterFilters = null,
+                    name = null,
+                    status = null,
+                    gender = null,
+                    species = null,
+                    type = null,
+                )
+            }
+            val characterFilters = CharacterFilters()
+            val filteredCharacters =
+                ramRepo.getFilteredCharacters(characterFilters)
+            _uiState.update {
+                it.copy(
+                    characters = filteredCharacters,
+                )
+            }
 
+            ramRepo.refresh()
         }
     }
 

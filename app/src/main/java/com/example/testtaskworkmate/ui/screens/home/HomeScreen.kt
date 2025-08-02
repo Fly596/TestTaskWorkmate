@@ -119,7 +119,13 @@ fun HomeScreenNew(
                     )
                     FilterDropdown(
                         menuItems =
-                            listOf("Male", "Female", "unknown", "Genderless"),
+                            listOf(
+                                "Male",
+                                "Female",
+                                "unknown",
+                                "Genderless",
+                                "Not selected"
+                            ),
                         label = "Gender",
                         selected = state.value.gender,
                         onSelected = {
@@ -133,6 +139,15 @@ fun HomeScreenNew(
                     shape = ShapeDefaults.Small,
                 ) {
                     Text("Apply filters")
+                }
+
+                // resetFilters
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { homeScreenViewModel.resetFilters() },
+                    shape = ShapeDefaults.Small,
+                ) {
+                    Text("Reset filters")
                 }
                 CharactersGridScreen(
                     modifier = Modifier,
@@ -158,12 +173,18 @@ fun FilterDropdown(
         }
     }
 
-    Box(modifier = Modifier.padding(vertical = 8.dp)) {
+    Box(modifier = Modifier.padding(vertical = 4.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable(onClick = { expanded = !expanded }),
+            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier
+                .width(100.dp)
+                .clickable(onClick = { expanded = !expanded }),
         ) {
-            Text(text = selected ?: "Choose $label", style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = selected ?: "$label",
+                style = MaterialTheme.typography.bodySmall
+            )
             IconButton(onClick = { expanded = true }) {
                 Icon(
                     painter = painterResource(R.drawable.arrow_dropdown),
@@ -177,10 +198,12 @@ fun FilterDropdown(
             expanded = expanded,
             onDismissRequest = { expanded = false },
         ) {
-            DropdownMenuItem(
-                text = { Text("Not selected") },
-                onClick = { expanded = false },
-            )
+            /*  DropdownMenuItem(
+                 text = { Text("Not selected") },
+                 onClick = {
+                     expanded = false
+                 },
+             ) */
             menuItems.forEach { option ->
                 DropdownMenuItem(
                     text = { Text(option) },
@@ -205,6 +228,7 @@ fun CharactersGridScreen(
         columns = GridCells.Fixed(2),
         modifier = modifier.fillMaxSize(),
         contentPadding = contentPadding,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         items(items = networkCharacters, key = { character -> character.id }) { character ->
             CharacterCard(
@@ -225,7 +249,8 @@ fun CharacterCard(
     Card(
         modifier =
             modifier
-                .padding(8.dp)
+                .padding(vertical = 8.dp)
+                .height(350.dp)
                 .clickable(onClick = { onCharacterClick(networkCharacter.id) }),
         colors =
             CardDefaults.cardColors(
@@ -242,16 +267,15 @@ fun CharacterCard(
             contentDescription = "Character pfp",
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .fillMaxWidth()
-                .size(256.dp),
+                .height(172.dp)
+                .padding(bottom = 8.dp),
         )
-        Spacer(modifier = Modifier.height(16.dp))
-        Column(modifier = Modifier.padding(8.dp)) {
+        Column(modifier = Modifier.padding(horizontal = 8.dp)) {
             Text(
                 text = networkCharacter.name,
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.titleLarge,
             )
-            Text(text = networkCharacter.type)
+            Text(text = "Type: ${networkCharacter.type}")
             Text(text = "Species: ${networkCharacter.species}")
             Text(text = "Gender: ${networkCharacter.gender}")
 
