@@ -6,9 +6,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.example.testtaskworkmate.ui.screens.details.DetailsScreen
-import com.example.testtaskworkmate.ui.screens.home.HomeScreenNew
+import com.example.testtaskworkmate.ui.screens.home.HomeScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -28,16 +27,12 @@ fun RamNavGraph(
         startDestination = Home,
     ) {
         composable<Home> {
-            HomeScreenNew(
-
-                onCharacterClick = { id -> navController.navigate(Details(id)) },
+            HomeScreen(
+                onCharacterClick = { id -> navController.navigate(Details(id)) }
             )
         }
         composable<Details> { backStackEntry ->
-            val details: Details = backStackEntry.toRoute()
-            DetailsScreen(
-                onBackClick = { navController.popBackStack() },
-            )
+            DetailsScreen(onBackClick = { navController.popBackStack() })
         }
     }
 }

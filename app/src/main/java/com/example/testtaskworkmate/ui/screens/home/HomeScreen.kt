@@ -59,12 +59,11 @@ import com.example.testtaskworkmate.R
 import com.example.testtaskworkmate.data.source.network.NetworkCharacter
 
 @Composable
-fun HomeScreenNew(
+fun HomeScreen(
     modifier: Modifier = Modifier,
     homeScreenViewModel: HomeScreenViewModel = hiltViewModel(),
     onCharacterClick: (Int) -> Unit = {},
 ) {
-
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
