@@ -61,7 +61,7 @@ import com.example.testtaskworkmate.data.source.network.NetworkCharacter
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    homeScreenViewModel: HomeScreenViewModel = hiltViewModel(),
+    viewModel: HomeScreenViewModel = hiltViewModel(),
     onCharacterClick: (Int) -> Unit = {},
 ) {
     Scaffold(
@@ -69,12 +69,12 @@ fun HomeScreen(
         topBar = {
             HomeScreenTopBar(
                 onSearchClick = {
-                    homeScreenViewModel.onSearchByNameQuerySubmitted(it)
+                    viewModel.onSearchByNameQuerySubmitted(it)
                 }
             )
         },
     ) { innerPadding ->
-        val state = homeScreenViewModel.uiState.collectAsStateWithLifecycle()
+        val state = viewModel.uiState.collectAsStateWithLifecycle()
         if (state.value.isLoading) {
             LoadingScreen(modifier = Modifier.fillMaxSize())
         } else if (state.value.error != null) {
@@ -88,7 +88,7 @@ fun HomeScreen(
             Column(
                 modifier =
                     Modifier
-                        .fillMaxSize()
+                        .fillMaxWidth()
                         .padding(innerPadding)
                         .padding(horizontal = 16.dp)
             ) {
@@ -105,14 +105,14 @@ fun HomeScreen(
                         selected = state.value.status,
                         menuItems = listOf("Alive", "Dead", "unknown"),
                         onSelected = {
-                            homeScreenViewModel.statusFilterChanged(it)
+                            viewModel.statusFilterChanged(it)
                         },
                     )
                     FilterDropdown(
                         label = "Species",
                         selected = state.value.species,
                         onSelected = {
-                            homeScreenViewModel.speciesFilterChanged(it)
+                            viewModel.speciesFilterChanged(it)
                         },
                         menuItems = listOf("Human", "Alien"),
                     )
@@ -128,13 +128,13 @@ fun HomeScreen(
                         label = "Gender",
                         selected = state.value.gender,
                         onSelected = {
-                            homeScreenViewModel.genderFilterChanged(it)
+                            viewModel.genderFilterChanged(it)
                         },
                     )
                 }
                 Button(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = { homeScreenViewModel.filterCharacters() },
+                    onClick = { viewModel.filterCharacters() },
                     shape = ShapeDefaults.Small,
                 ) {
                     Text("Apply filters")
@@ -143,7 +143,7 @@ fun HomeScreen(
                 // resetFilters
                 Button(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = { homeScreenViewModel.resetFilters() },
+                    onClick = { viewModel.resetFilters() },
                     shape = ShapeDefaults.Small,
                 ) {
                     Text("Reset filters")
