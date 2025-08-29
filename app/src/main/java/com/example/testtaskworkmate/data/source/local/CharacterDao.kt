@@ -41,11 +41,11 @@ interface CharacterDao {
             (:type IS NULL OR type = :type)
     """
     )
-    suspend fun getFilteredCharacters(
+    fun getFilteredCharacters(
         name: String?,
         statuses: String?,
         genders: String?,
         species: String?,
         type: String?,
-    ): List<LocalCharacter>
+    ): Flow<List<LocalCharacter>>
 }

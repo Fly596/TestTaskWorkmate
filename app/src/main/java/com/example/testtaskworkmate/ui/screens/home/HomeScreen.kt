@@ -74,87 +74,88 @@ fun HomeScreen(
             )
         },
     ) { innerPadding ->
-        val state = viewModel.uiState.collectAsStateWithLifecycle()
-        if (state.value.isLoading) {
-            LoadingScreen(modifier = Modifier.fillMaxSize())
-        } else if (state.value.error != null) {
-            ErrorScreen(
-                modifier = Modifier.fillMaxSize(),
-                error = state.value.error.toString(),
-            )
-        } else if (state.value.characters.isEmpty()) {
-            Text("No characters found")
-        } else {
-            Column(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(innerPadding)
-                        .padding(horizontal = 16.dp)
+        val state = viewModel.uiStaten.collectAsStateWithLifecycle()
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(innerPadding)
+                    .padding(horizontal = 16.dp)
+        ) {
+
+            // Фильтры.
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement =
+                    Arrangement
+                        .SpaceBetween, // Равномерно распределяем фильтры
             ) {
-
-                // Фильтры.
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement =
-                        Arrangement
-                            .SpaceBetween, // Равномерно распределяем фильтры
-                ) {
-                    FilterDropdown(
-                        label = "Status",
-                        selected = state.value.status,
-                        menuItems = listOf("Alive", "Dead", "unknown"),
-                        onSelected = {
-                            viewModel.statusFilterChanged(it)
-                        },
-                    )
-                    FilterDropdown(
-                        label = "Species",
-                        selected = state.value.species,
-                        onSelected = {
-                            viewModel.speciesFilterChanged(it)
-                        },
-                        menuItems = listOf("Human", "Alien"),
-                    )
-                    FilterDropdown(
-                        menuItems =
-                            listOf(
-                                "Male",
-                                "Female",
-                                "unknown",
-                                "Genderless",
-                                "Not selected"
-                            ),
-                        label = "Gender",
-                        selected = state.value.gender,
-                        onSelected = {
-                            viewModel.genderFilterChanged(it)
-                        },
-                    )
-                }
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = { viewModel.filterCharacters() },
-                    shape = ShapeDefaults.Small,
-                ) {
-                    Text("Apply filters")
-                }
-
-                // resetFilters
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = { viewModel.resetFilters() },
-                    shape = ShapeDefaults.Small,
-                ) {
-                    Text("Reset filters")
-                }
-                CharactersGridScreen(
-                    modifier = Modifier,
-                    networkCharacters = state.value.characters,
-                    onCharacterClick = onCharacterClick,
+                FilterDropdown(
+                    label = "Status",
+                    selected = state.value.status,
+                    menuItems = listOf("Alive", "Dead", "unknown"),
+                    onSelected = {
+                        viewModel.statusFilterChanged(it)
+                    },
+                )
+                FilterDropdown(
+                    label = "Species",
+                    selected = state.value.species,
+                    onSelected = {
+                        viewModel.speciesFilterChanged(it)
+                    },
+                    menuItems = listOf("Human", "Alien"),
+                )
+                FilterDropdown(
+                    menuItems =
+                        listOf(
+                            "Male",
+                            "Female",
+                            "unknown",
+                            "Genderless",
+                            "Not selected"
+                        ),
+                    label = "Gender",
+                    selected = state.value.gender,
+                    onSelected = {
+                        viewModel.genderFilterChanged(it)
+                    },
                 )
             }
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { viewModel.filterCharacters() },
+                shape = ShapeDefaults.Small,
+            ) {
+                Text("Apply filters")
+            }
+
+            // resetFilters
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { viewModel.resetFilters() },
+                shape = ShapeDefaults.Small,
+            ) {
+                Text("Reset filters")
+            }
+            CharactersGridScreen(
+                modifier = Modifier,
+                networkCharacters = state.value.characters,
+                onCharacterClick = onCharacterClick,
+            )
         }
+        /*         if (state.value.isLoading) {
+                    LoadingScreen(modifier = Modifier.fillMaxSize())
+                } else if (state.value.error != null) {
+                    ErrorScreen(
+                        modifier = Modifier.fillMaxSize(),
+                        error = state.value.error.toString(),
+                    )
+                } else if (state.value.characters.isEmpty()) {
+                    Text("No characters found")
+                } else {
+
+                } */
     }
 }
 

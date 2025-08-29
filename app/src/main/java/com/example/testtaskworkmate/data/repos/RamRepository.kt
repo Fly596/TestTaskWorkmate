@@ -1,8 +1,8 @@
 package com.example.testtaskworkmate.data.repos
 
+import android.util.Log
 import com.example.testtaskworkmate.data.source.local.CharacterDao
 import com.example.testtaskworkmate.data.source.local.CharacterFilters
-import com.example.testtaskworkmate.data.source.local.LocalCharacter
 import com.example.testtaskworkmate.data.source.local.toEntity
 import com.example.testtaskworkmate.data.source.local.toNetwork
 import com.example.testtaskworkmate.data.source.network.NetworkCharacter
@@ -15,7 +15,7 @@ import javax.inject.Singleton
 interface RamRepository {
 
     // Получение списка персонажей.
-    fun fetchCharacters(): Flow<List<NetworkCharacter>>
+    fun getCharactersFlow(): Flow<List<NetworkCharacter>>
 
     // Обновление данных.
     suspend fun refresh()
@@ -38,9 +38,11 @@ constructor(
     private val characterDao: CharacterDao,
 ) : RamRepository {
 
-    override fun fetchCharacters(): Flow<List<NetworkCharacter>> {
-
-        val localCharacters = characterDao.getAllCharacters()
+    override fun getCharactersFlow(): Flow<List<NetworkCharacter>> {
+        return characterDao.getAllCharactersFlow().map { localCharacters ->
+            localCharacters.toNetwork()
+        }
+        /*         val localCharacters = characterDao.getAllCharacters()
 
         // Проверка наличия данных в локальной базе данных.
         if (localCharacters.isNotEmpty()) {
@@ -67,7 +69,7 @@ constructor(
 
             // Возвращаем список NetworkCharacter.
             return newLocalCharacters.toNetwork()
-        }
+        } */
     }
 
     /*     override fun fetchCharacters():Flow<List<NetworkCharacter>> {
@@ -116,21 +118,36 @@ constructor(
                 species = filters.species,
                 type = filters.types,
             )
-            .toNetwork()
+            .map { it.toNetwork() }
     }
 
     // Обновляет данные из интернета.
     override suspend fun refresh() {
+        try {
+            val networkCharacters = networkRepository.getAllCharacters()
+            val localCharacters = networkCharacters.map { it.toEntity() }
+            characterDao.deleteAll() // Очищаем старые данные
+            characterDao.insertCharacters(localCharacters) // Вставляем свежие
+        } catch (e: Exception) {
+            // Важно обрабатывать ошибки, например, если нет сети
+            Log.e("RamRepository", "Failed to refresh characters", e)
+        }
         // Запрос данных.
-        val networkCharacters = networkRepository.getAllCharacters()
+        /*       val networkCharacters = networkRepository.getAllCharacters()
         // Очистка локальной бд.
         characterDao.deleteAll()
 
         // Преобразуем список NetworkCharacter в список Entity локальной
         // базы данных.
-        val characterEntities = networkCharacters.map { it.toEntity() }
+        var charactersList: List<LocalCharacter> = emptyList()
 
-        characterDao.insertCharacters(characterEntities)
+        val characterEntities =
+            networkCharacters.map { characters ->
+                charactersList = characters.map { it.toEntity() }
+                characters.map { it.toEntity() }
+            }
+
+        characterDao.insertCharacters(charactersList) */
     }
 
     override suspend fun getCharacterById(id: Int): NetworkCharacter? {

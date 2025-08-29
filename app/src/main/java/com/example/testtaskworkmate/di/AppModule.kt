@@ -9,13 +9,15 @@ import com.example.testtaskworkmate.data.source.local.AppDatabase
 import com.example.testtaskworkmate.data.source.local.CharacterDao
 import com.example.testtaskworkmate.data.source.network.NetworkRepository
 import com.example.testtaskworkmate.data.source.network.NetworkRepositoryImpl
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
 import javax.inject.Singleton
 
 private const val BASE_URL = "https://rickandmortyapi.com/api/"
@@ -25,11 +27,14 @@ private const val BASE_URL = "https://rickandmortyapi.com/api/"
 object AppModule {
     @Provides
     @Singleton
-    fun provideRetrofit(): Retrofit =
-        Retrofit.Builder()
-            .addConverterFactory(ScalarsConverterFactory.create()/* Json.asConverterFactory("application/json".toMediaType() */)
+    fun provideRetrofit(): Retrofit {
+        val json = Json { ignoreUnknownKeys = true }
+
+        return Retrofit.Builder()
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .baseUrl(BASE_URL)
             .build()
+    }
 
     @Provides
     @Singleton
