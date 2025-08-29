@@ -2,6 +2,7 @@ package com.example.testtaskworkmate.data.api
 
 import com.example.testtaskworkmate.data.source.network.ApiResponse
 import com.example.testtaskworkmate.data.source.network.NetworkCharacter
+import kotlinx.coroutines.flow.Flow
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -14,12 +15,12 @@ interface ApiService {
 
     // Получение списка персонажей.
     @GET("character")
-    suspend fun getCharacters(
+    fun getCharacters(
         @Query("name")
         name: String? = null, // String? - значит, параметр может отсутствовать
         @Query("status") status: String? = null,
         @Query("species") species: String? = null,
         @Query("gender") gender: String? = null,
         @Query("type") type: String? = null,
-    ): ApiResponse
+    ): Flow<ApiResponse>
 }

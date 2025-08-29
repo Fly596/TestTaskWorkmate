@@ -22,6 +22,7 @@ roomCompiler = "2.7.2"
 roomKtx = "2.7.2"
 pagingRuntime = "3.4.0-alpha01"
 pagingCompose = "3.4.0-alpha01"
+converterScalars = "3.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -53,6 +54,7 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 androidx-paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "pagingRuntime" }
 androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "pagingCompose" }
+converter-scalars = { group = "com.squareup.retrofit2", name = "converter-scalars", version.ref = "converterScalars" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

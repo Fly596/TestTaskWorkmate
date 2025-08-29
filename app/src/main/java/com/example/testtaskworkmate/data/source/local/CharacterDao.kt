@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CharacterDao {
@@ -18,7 +19,10 @@ interface CharacterDao {
     suspend fun insertCharacter(character: LocalCharacter)
 
     @Query("SELECT * FROM characters")
-    suspend fun getAllCharacters(): List<LocalCharacter>
+    fun getAllCharactersFlow(): Flow<List<LocalCharacter>>
+
+    @Query("SELECT * FROM characters")
+    fun getAllCharacters(): List<LocalCharacter>
 
     @Query("SELECT * FROM characters WHERE id = :id")
     suspend fun getCharacterById(id: Int): LocalCharacter?
