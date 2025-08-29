@@ -41,33 +41,64 @@ constructor(private val ramRepo: RamRepository) : ViewModel() {
     private val _genderFilter = MutableStateFlow<String?>(null)
     private val _speciesFilter = MutableStateFlow<String?>(null)
 
+    // ДОБАВЛЯЕМ НОВЫЙ ФИЛЬТР ДЛЯ ПОИСКА
+    private val _searchQuery =
+        MutableStateFlow("") // По умолчанию пустая строка
+
     val uiStaten: StateFlow<HomeScreenUiState> =
         combine(
             ramRepo.getCharactersFlow(),
             _statusFilter,
             _genderFilter,
             _speciesFilter,
-        ) { characters, status, gender, species ->
-            val filteredList =
-                characters.filter { character ->
-                    (status == null ||
-                            character.status.equals(
-                                status,
-                                ignoreCase = true,
-                            )) &&
-                            (gender == null ||
-                                    character.gender.equals(
-                                        gender,
-                                        ignoreCase = true,
-                                    )) &&
-                            (species == null ||
-                                    character.species.equals(
-                                        species,
-                                        ignoreCase = true,
-                                    ))
+            _searchQuery,
+        ) { characters, status, gender, species, query ->
+            val filteredList = characters.filter { character ->
+                // Фильтр по имени (поисковому запросу)
+                val matchesSearchQuery = if (query.isBlank()) {
+                    true // Если запрос пустой, подходят все
+                } else {
+                    character.name.contains(query, ignoreCase = true)
                 }
+                // Остальные фильтры
+                val matchesStatus = status == null || character.status.equals(
+                    status,
+                    ignoreCase = true
+                )
+                val matchesGender = gender == null || character.gender.equals(
+                    gender,
+                    ignoreCase = true
+                )
+                val matchesSpecies =
+                    species == null || character.species.equals(
+                        species,
+                        ignoreCase = true
+                    )
 
+                // Персонаж отображается, если соответствует всем условиям
+                matchesSearchQuery && matchesStatus && matchesGender && matchesSpecies
+            }
             HomeScreenUiState(characters = filteredList)
+
+            /*  val filteredList =
+                 characters.filter { character ->
+                     (status == null ||
+                         character.status.equals(
+                             status,
+                             ignoreCase = true,
+                         )) &&
+                         (gender == null ||
+                             character.gender.equals(
+                                 gender,
+                                 ignoreCase = true,
+                             )) &&
+                         (species == null ||
+                             character.species.equals(
+                                 species,
+                                 ignoreCase = true,
+                             ))
+                 } */
+
         }
             .stateIn(
                 scope = viewModelScope,
@@ -94,7 +125,8 @@ constructor(private val ramRepo: RamRepository) : ViewModel() {
     }
 
     fun onSearchByNameQuerySubmitted(query: String) {
-        viewModelScope.launch {
+        _searchQuery.value = query
+        /* viewModelScope.launch {
             val filteredCharacters =
                 if (query.isEmpty()) {
                     _uiState.value.characters
@@ -102,7 +134,7 @@ constructor(private val ramRepo: RamRepository) : ViewModel() {
                     ramRepo.getCharactersByName(query)
                 }
             _uiState.update { it.copy(characters = filteredCharacters) }
-        }
+        } */
     }
 
     // Фильтрация персонажей.
