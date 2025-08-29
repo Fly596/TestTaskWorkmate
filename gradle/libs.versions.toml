@@ -1,23 +1,22 @@
 [versions]
-agp = "8.12.0"
+agp = "8.12.2"
 coilCompose = "2.7.0"
 kotlin = "2.1.0"
 coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
-hiltAndroid = "2.56.2"
+hiltAndroid = "2.57.1"
 ksp = "2.1.0-1.0.29"
-roomRuntime = "2.7.0"
 espressoCore = "3.6.1"
 kotlinxSerializationJson = "1.9.0"
 lifecycleRuntimeKtx = "2.9.1"
-hilt = "2.56.2"
 activityCompose = "1.10.1"
 composeBom = "2025.06.01"
+navigationCompose = "2.9.2"
 okhttp = "5.1.0"
 retrofit = "3.0.0"
 retrofit2KotlinxSerializationConverter = "1.0.0"
-comGoogleDaggerHiltAndroidGradlePlugin = "2.56.2"
+comGoogleDaggerHiltAndroidGradlePlugin = "2.57.1"
 androidxHiltNavigationCompose = "1.2.0"
 roomCompiler = "2.7.2"
 roomKtx = "2.7.2"
@@ -26,6 +25,7 @@ pagingCompose = "3.4.0-alpha01"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -51,8 +51,6 @@ hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", ve
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomCompiler" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
-hilt-android-core = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
-hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 androidx-paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "pagingRuntime" }
 androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "pagingCompose" }
 
