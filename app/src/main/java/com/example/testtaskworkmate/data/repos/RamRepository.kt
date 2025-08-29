@@ -42,64 +42,8 @@ constructor(
         return characterDao.getAllCharactersFlow().map { localCharacters ->
             localCharacters.toNetwork()
         }
-        /*         val localCharacters = characterDao.getAllCharacters()
 
-        // Проверка наличия данных в локальной базе данных.
-        if (localCharacters.isNotEmpty()) {
-            return characterDao.getAllCharactersFlow().map { it.toNetwork() }
-        } else {
-            // Если данных нет, делаем запрос к API и сохраняем в локальную базу
-            // данных.
-            val networkCharacters = networkRepository.getAllCharacters()
-
-            // Преобразуем список NetworkCharacter в список Entity локальной
-            // базы данных.
-            var charactersList: List<LocalCharacter>
-            val characterEntitiesFlow = networkCharacters.map { characters ->
-                charactersList = characters.map { it.toEntity() }
-                characters.map { it.toEntity() }
-            }
-
-
-            // Добавляем список Entity в локальную базу данных.
-            characterDao.insertCharacters(charactersList)
-
-            // Получаем обновленные данные из локальной базы данных.
-            val newLocalCharacters = characterDao.getAllCharactersFlow()
-
-            // Возвращаем список NetworkCharacter.
-            return newLocalCharacters.toNetwork()
-        } */
     }
-
-    /*     override fun fetchCharacters():Flow<List<NetworkCharacter>> {
-        val localCharactersFlow = characterDao.getAllCharacters()
-        val localCharacters = localCharactersFlow.map { it.toNetwork() }.collect {
-            return it
-        }
-
-        // Проверка наличия данных в локальной базе данных.
-        if (localCharacters.is) {
-            return localCharacters.toNetwork()
-        } else {
-            // Если данных нет, делаем запрос к API и сохраняем в локальную базу
-            // данных.
-            val networkCharacters = networkRepository.getAllCharacters()
-
-            // Преобразуем список NetworkCharacter в список Entity локальной
-            // базы данных.
-            val characterEntities = networkCharacters.map { it.toEntity() }
-
-            // Добавляем список Entity в локальную базу данных.
-            characterDao.insertCharacters(characterEntities)
-
-            // Получаем обновленные данные из локальной базы данных.
-            val newLocalCharacters = characterDao.getAllCharacters()
-
-            // Возвращаем список NetworkCharacter.
-            return newLocalCharacters.toNetwork()
-        }
-    } */
 
     override suspend fun getCharactersByName(
         name: String
@@ -132,22 +76,6 @@ constructor(
             // Важно обрабатывать ошибки, например, если нет сети
             Log.e("RamRepository", "Failed to refresh characters", e)
         }
-        // Запрос данных.
-        /*       val networkCharacters = networkRepository.getAllCharacters()
-        // Очистка локальной бд.
-        characterDao.deleteAll()
-
-        // Преобразуем список NetworkCharacter в список Entity локальной
-        // базы данных.
-        var charactersList: List<LocalCharacter> = emptyList()
-
-        val characterEntities =
-            networkCharacters.map { characters ->
-                charactersList = characters.map { it.toEntity() }
-                characters.map { it.toEntity() }
-            }
-
-        characterDao.insertCharacters(charactersList) */
     }
 
     override suspend fun getCharacterById(id: Int): NetworkCharacter? {

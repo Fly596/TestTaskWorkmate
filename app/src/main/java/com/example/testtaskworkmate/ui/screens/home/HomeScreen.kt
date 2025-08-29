@@ -198,13 +198,8 @@ fun FilterDropdown(
             expanded = expanded,
             onDismissRequest = { expanded = false },
         ) {
-            /*  DropdownMenuItem(
-                 text = { Text("Not selected") },
-                 onClick = {
-                     expanded = false
-                 },
-             ) */
-            menuItems.forEach { option ->
+
+        menuItems.forEach { option ->
                 DropdownMenuItem(
                     text = { Text(option) },
                     onClick = {
